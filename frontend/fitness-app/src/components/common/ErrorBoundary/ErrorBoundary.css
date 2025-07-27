@@ -1,0 +1,29 @@
+.error-boundary-container {
+  padding: 2rem;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-boundary-container .card {
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.error-boundary-container details {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+}
+
+.error-boundary-container summary {
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.error-boundary-container summary:hover {
+  background-color: #e9ecef;
+}

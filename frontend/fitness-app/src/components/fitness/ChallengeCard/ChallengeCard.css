@@ -1,0 +1,44 @@
+.challenge-card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.challenge-card:hover {
+  transform: translateY(-2px);
+}
+
+.challenge-header {
+  text-align: center;
+}
+
+.challenge-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.challenge-progress {
+  margin: 1rem 0;
+}
+
+.progress-label {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.progress-percentage {
+  font-weight: 600;
+  color: #333;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e9ecef;
+}
+
+.progress-bar {
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}

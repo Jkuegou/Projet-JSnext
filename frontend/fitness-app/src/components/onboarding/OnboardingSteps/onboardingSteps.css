@@ -1,0 +1,261 @@
+/* General Step Styles */ 
+.onboarding-step { 
+  text-align: center; 
+} 
+ 
+.step-header { 
+  margin-bottom: 32px; 
+} 
+ 
+.step-header h2 { 
+  color: #1f2937; 
+  font-size: 28px; 
+  font-weight: 700; 
+  margin-bottom: 8px; 
+} 
+ 
+.step-header p { 
+  color: #6b7280; 
+  font-size: 16px; 
+  margin: 0; 
+} 
+ 
+.step-body { 
+  text-align: left; 
+} 
+ 
+/* Input Styles */ 
+.input-group { 
+  margin-bottom: 24px; 
+} 
+ 
+.input-label { 
+  display: block; 
+  margin-bottom: 8px; 
+  color: #374151; 
+  font-weight: 600; 
+} 
+ 
+.form-input { 
+  width: 100%; 
+  padding: 12px 16px; 
+  border: 2px solid #e5e7eb; 
+  border-radius: 8px; 
+  font-size: 16px; 
+  transition: border-color 0.2s ease; 
+} 
+ 
+.form-input:focus { 
+  outline: none; 
+  border-color: #667eea; 
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); 
+} 
+ 
+.form-input.error { 
+  border-color: #ef4444; 
+} 
+ 
+.error-message { 
+  color: #ef4444; 
+  font-size: 14px; 
+  margin-top: 4px; 
+  display: block; 
+} 
+ 
+/* Option Cards */ 
+.options-container { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+  margin-bottom: 24px; 
+} 
+ 
+.option-card { 
+  display: flex; 
+  align-items: center; 
+  padding: 20px; 
+  border: 2px solid #e5e7eb; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  transition: all 0.2s ease; 
+  background: white; 
+} 
+ 
+.option-card:hover { 
+  border-color: #667eea; 
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+} 
+ 
+.option-card.selected { 
+  border-color: #667eea; 
+  background: linear-gradient(135deg, #667eea08, #764ba208); 
+} 
+ 
+.option-icon { 
+  font-size: 24px; 
+  margin-right: 16px; 
+  width: 40px; 
+  text-align: center; 
+} 
+ 
+.option-content { 
+  flex: 1; 
+} 
+ 
+.option-title { 
+  font-size: 18px; 
+  font-weight: 600; 
+  color: #1f2937; 
+  margin: 0 0 4px 0; 
+} 
+ 
+.option-description { 
+  color: #6b7280; 
+  margin: 0; 
+  font-size: 14px; 
+} 
+ 
+.option-check { 
+  width: 24px; 
+  height: 24px; 
+  border-radius: 50%; 
+  background: #667eea; 
+  color: white; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  opacity: 0; 
+  transition: opacity 0.2s ease; 
+} 
+ 
+.option-card.selected .option-check { 
+  opacity: 1; 
+} 
+ 
+/* Summary Styles */ 
+.summary-container { 
+  text-align: center; 
+} 
+ 
+.summary-title { 
+  color: #1f2937; 
+  font-size: 20px; 
+  font-weight: 600; 
+  margin-bottom: 24px; 
+} 
+ 
+.summary-items { 
+  background: #f9fafb; 
+  border-radius: 12px; 
+  padding: 24px; 
+  margin-bottom: 24px; 
+} 
+ 
+.summary-item { 
+  display: flex; 
+  align-items: center; 
+  padding: 12px 0; 
+  border-bottom: 1px solid #e5e7eb; 
+} 
+ 
+.summary-item:last-child { 
+  border-bottom: none; 
+} 
+ 
+.summary-icon { 
+  font-size: 20px; 
+  margin-right: 16px; 
+  width: 32px; 
+  text-align: center; 
+} 
+ 
+.summary-content { 
+  flex: 1; 
+  text-align: left; 
+} 
+ 
+.summary-label { 
+  display: block; 
+  color: #6b7280; 
+  font-size: 14px; 
+  margin-bottom: 2px; 
+} 
+ 
+.summary-value { 
+  display: block; 
+  color: #1f2937; 
+  font-weight: 600; 
+  font-size: 16px; 
+} 
+ 
+.summary-message { 
+  background: #eff6ff; 
+  border: 1px solid #dbeafe; 
+  border-radius: 8px; 
+  padding: 16px; 
+  margin-bottom: 32px; 
+} 
+ 
+.summary-message p { 
+  color: #1e40af; 
+  margin: 0; 
+  font-size: 14px; 
+  line-height: 1.5; 
+} 
+ 
+/* Helpful Text */ 
+.helpful-text { 
+  text-align: center; 
+  margin-top: 16px; 
+} 
+ 
+.helpful-text p { 
+  color: #6b7280; 
+  font-size: 14px; 
+  margin: 0; 
+} 
+ 
+/* Loading Spinner */ 
+.spinner { 
+  display: inline-block; 
+  width: 16px; 
+  height: 16px; 
+  border: 2px solid #ffffff40; 
+  border-radius: 50%; 
+  border-top-color: #ffffff; 
+  animation: spin 1s ease-in-out infinite; 
+  margin-right: 8px; 
+} 
+ 
+@keyframes spin { 
+  to { 
+    transform: rotate(360deg); 
+  } 
+} 
+ 
+/* Responsive Design */ 
+@media (max-width: 768px) { 
+  .step-header h2 { 
+    font-size: 24px; 
+  } 
+   
+  .option-card { 
+    padding: 16px; 
+  } 
+   
+  .option-icon { 
+    font-size: 20px; 
+    margin-right: 12px; 
+    width: 32px; 
+  } 
+   
+  .option-title { 
+    font-size: 16px; 
+  } 
+   
+  .summary-items { 
+    padding: 16px; 
+  } 
+} 

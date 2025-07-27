@@ -1,0 +1,242 @@
+.fitness-app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.main-content {
+  padding: 2rem 0;
+}
+
+.page-header {
+  background: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  color: #495057;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.section-title {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.card-modern {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.card-modern .card-header {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: 1.25rem;
+}
+
+.card-modern .card-body {
+  padding: 1.5rem;
+}
+
+.btn-modern {
+  border-radius: 25px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.badge-modern {
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.form-control-modern {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control-modern:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.alert-modern {
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.table-modern {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-modern thead th {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: none;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+.table-modern tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.table-modern tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Animations utilitaires */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem 0;
+  }
+  
+  .page-header {
+    padding: 1.5rem 0;
+  }
+  
+  .card-modern .card-body {
+    padding: 1rem;
+  }
+  
+  .btn-modern {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-header {
+    padding: 1rem 0;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .fitness-app {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    color: #e9ecef;
+  }
+  
+  .page-header {
+    background: #343a40;
+    color: #e9ecef;
+  }
+  
+  .card-modern {
+    background: #343a40;
+    color: #e9ecef;
+  }
+  
+  .form-control-modern {
+    background: #495057;
+    border-color: #6c757d;
+    color: #e9ecef;
+  }
+  
+  .form-control-modern:focus {
+    background: #495057;
+    border-color: #007bff;
+    color: #e9ecef;
+  }
+  
+  .table-modern {
+    background: #343a40;
+    color: #e9ecef;
+  }
+  
+  .table-modern thead th {
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+    color: #e9ecef;
+  }
+  
+  .table-modern tbody tr:hover {
+    background-color: #495057;
+  }
+}

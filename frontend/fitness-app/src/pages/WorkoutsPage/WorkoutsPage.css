@@ -1,0 +1,194 @@
+
+
+.workouts-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  position: relative;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+.stat-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  opacity: 0.8;
+}
+
+.workout-tabs .nav-pills {
+  background-color: #e9ecef;
+  border-radius: 15px;
+  padding: 0.5rem;
+}
+
+.workout-tabs .nav-link {
+  border-radius: 10px;
+  color: #6c757d;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.workout-tabs .nav-link:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.workout-tabs .nav-link.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.workout-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.workout-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-container {
+  overflow: hidden;
+}
+
+.card-img-container img {
+  transition: transform 0.3s ease;
+}
+
+.workout-card:hover .card-img-container img {
+  transform: scale(1.05);
+}
+
+.card-img-overlay {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+}
+
+.workout-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.workout-stats .stat-item i {
+  font-size: 0.9rem;
+}
+
+.progress-section .progress {
+  border-radius: 10px;
+  background-color: #e9ecef;
+}
+
+.progress-section .progress-bar {
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.rating-section .stars {
+  font-size: 0.9rem;
+}
+
+.rating-section .stars i {
+  margin-right: 2px;
+}
+
+/* Badge styles */
+.badge.bg-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.badge.bg-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.badge.bg-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+.badge.bg-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+}
+
+.badge.bg-info {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+}
+
+/* Button enhancements */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-outline-secondary {
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-header .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .workout-tabs .nav-link {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .workout-stats .stat-item {
+    font-size: 0.9rem;
+  }
+  
+  .stat-card {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-header {
+    text-align: center;
+  }
+}
+  
+  .page-header .display-4 {
+    font-size: 2rem;
+  }
+  

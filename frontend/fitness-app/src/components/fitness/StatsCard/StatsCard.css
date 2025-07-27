@@ -1,0 +1,234 @@
+.stats-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  height: 140px;
+  background: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-color);
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card.clickable {
+  cursor: pointer;
+}
+
+.stats-card.clickable:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.stats-card .card-body {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.stats-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.stats-value-container {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.stats-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.stats-unit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-left: 0.25rem;
+  color: var(--text-muted);
+}
+
+.stats-trend {
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.stats-description {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stats-icon {
+  font-size: 2.5rem;
+  opacity: 0.3;
+  color: var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.stats-card:hover .stats-icon {
+  opacity: 0.5;
+  transform: scale(1.1);
+}
+
+/* Variantes de couleurs */
+.stats-card-primary {
+  --bg-color-1: #e3f2fd;
+  --bg-color-2: #bbdefb;
+  --accent-color: #2196f3;
+  --text-primary: #1565c0;
+  --text-muted: #1976d2;
+}
+
+.stats-card-success {
+  --bg-color-1: #e8f5e8;
+  --bg-color-2: #c8e6c9;
+  --accent-color: #4caf50;
+  --text-primary: #2e7d32;
+  --text-muted: #388e3c;
+}
+
+.stats-card-warning {
+  --bg-color-1: #fff3e0;
+  --bg-color-2: #ffe0b2;
+  --accent-color: #ff9800;
+  --text-primary: #ef6c00;
+  --text-muted: #f57c00;
+}
+
+.stats-card-danger {
+  --bg-color-1: #ffebee;
+  --bg-color-2: #ffcdd2;
+  --accent-color: #f44336;
+  --text-primary: #c62828;
+  --text-muted: #d32f2f;
+}
+
+.stats-card-info {
+  --bg-color-1: #e0f2f1;
+  --bg-color-2: #b2dfdb;
+  --accent-color: #009688;
+  --text-primary: #00695c;
+  --text-muted: #00796b;
+}
+
+.stats-card-light {
+  --bg-color-1: #fafafa;
+  --bg-color-2: #f5f5f5;
+  --accent-color: #757575;
+  --text-primary: #424242;
+  --text-muted: #616161;
+}
+
+.stats-card-dark {
+  --bg-color-1: #424242;
+  --bg-color-2: #616161;
+  --accent-color: #ffffff;
+  --text-primary: #ffffff;
+  --text-muted: #e0e0e0;
+}
+
+/* États de chargement */
+.stats-card-loading {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.placeholder-title {
+  height: 12px;
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  width: 60%;
+}
+
+.placeholder-value {
+  height: 32px;
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  width: 80%;
+}
+
+.placeholder-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 50%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-card {
+    height: 120px;
+  }
+  
+  .stats-card .card-body {
+    padding: 1rem;
+  }
+  
+  .stats-value {
+    font-size: 1.8rem;
+  }
+  
+  .stats-icon {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-card {
+    height: 100px;
+  }
+  
+  .stats-card .card-body {
+    padding: 0.75rem;
+  }
+  
+  .stats-value {
+    font-size: 1.5rem;
+  }
+  
+  .stats-icon {
+    font-size: 1.5rem;
+  }
+  
+  .stats-title {
+    font-size: 0.7rem;
+  }
+}

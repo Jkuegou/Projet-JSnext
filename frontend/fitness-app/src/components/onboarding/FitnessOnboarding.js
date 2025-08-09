@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'; 
 import { useNavigate } from 'react-router-dom'; 
 import { AuthProvider } from '../../context/AuthContext'; 
-import { NotificationContext } from '../../context/NotificationContext'; 
+import { useNotification } from '../../context/NotificationContext'; 
 import OnboardingStepWeight from './OnboardingSteps/OnboardingStepWeight'; 
 import OnboardingStepTrainingType from './OnboardingSteps/OnboardingStepTrainingType'; 
 import OnboardingStepSchedule from './OnboardingSteps/OnboardingStepSchedule'; 
@@ -10,7 +10,7 @@ import './Onboarding.css';
 const FitnessOnboarding = () => { 
 const navigate = useNavigate(); 
 const { user } = useContext(AuthProvider); 
-const { showNotification } = useContext(NotificationContext); 
+const { showNotification } = useContext(useNotification); 
 // State to manage current step and onboarding data 
 const [currentStep, setCurrentStep] = useState(1); 
 const [isLoading, setIsLoading] = useState(false); 

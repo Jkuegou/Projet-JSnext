@@ -25,7 +25,7 @@ import './Header.css';
 const Header = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark position-fixed w-100 top-0" style={{ 
-      backgroundColor: '#1a1a1a', 
+      backgroundColor: '#afacacff', 
       zIndex: 1000,
       backdropFilter: 'blur(10px)',
       borderBottom: '1px solid rgba(255, 255, 255, 0.1)'

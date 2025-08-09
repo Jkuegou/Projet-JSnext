@@ -1,348 +1,388 @@
-import React, { useState } from 'react';
+// src/pages/WorkoutsPage/WorkoutsPage.js
+import React, { useState, useEffect } from 'react';
+import { 
+  Play, 
+  Pause, 
+  Clock, 
+  Flame, 
+  Target, 
+  Filter,
+  Search,
+  Plus,
+  Dumbbell,
+  Heart,
+  Zap,
+  Calendar,
+  Star,
+  Users,
+  ChevronRight,
+  BookOpen,
+  TrendingUp
+} from 'lucide-react';
 import './WorkoutsPage.css';
 
 const WorkoutsPage = () => {
-  const [activeTab, setActiveTab] = useState('my-workouts');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [isStarting, setIsStarting] = useState(false);
 
-  const myWorkouts = [
+  // Données mockées des entraînements
+  const [workouts] = useState([
     {
       id: 1,
-      name: 'Upper Body Strength',
-      duration: '45 min',
-      difficulty: 'Intermediate',
+      title: 'HIIT Cardio Blast',
+      description: 'Entraînement intense pour brûler un maximum de calories',
+      duration: 25,
+      difficulty: 'Difficile',
+      calories: 350,
       exercises: 8,
-      lastPerformed: '2 days ago',
-      calories: 320,
-      type: 'Strength',
-      progress: 75,
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop'
+      category: 'cardio',
+      image: '🔥',
+      color: 'from-red-500 to-orange-500',
+      equipment: 'Aucun',
+      rating: 4.8,
+      participants: 156
     },
     {
       id: 2,
-      name: 'HIIT Cardio Blast',
-      duration: '30 min',
-      difficulty: 'Advanced',
-      exercises: 6,
-      lastPerformed: '1 day ago',
-      calories: 450,
-      type: 'Cardio',
-      progress: 90,
-      image: 'https://images.unsplash.com/photo-1517963628607-235ccdd5476c?w=400&h=300&fit=crop'
+      title: 'Musculation Full Body',
+      description: 'Entraînement complet pour tout le corps',
+      duration: 45,
+      difficulty: 'Intermédiaire',
+      calories: 280,
+      exercises: 12,
+      category: 'strength',
+      image: '💪',
+      color: 'from-blue-500 to-cyan-500',
+      equipment: 'Haltères',
+      rating: 4.6,
+      participants: 203
     },
     {
       id: 3,
-      name: 'Full Body Workout',
-      duration: '60 min',
-      difficulty: 'Intermediate',
-      exercises: 12,
-      lastPerformed: '3 days ago',
-      calories: 380,
-      type: 'Mixed',
-      progress: 60,
-      image: 'https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=400&h=300&fit=crop'
-    }
-  ];
-
-  const recommendedWorkouts = [
+      title: 'Yoga Flow Matinal',
+      description: 'Séance de yoga relaxante pour bien commencer la journée',
+      duration: 30,
+      difficulty: 'Débutant',
+      calories: 120,
+      exercises: 15,
+      category: 'yoga',
+      image: '🧘‍♀️',
+      color: 'from-green-500 to-emerald-500',
+      equipment: 'Tapis',
+      rating: 4.9,
+      participants: 89
+    },
     {
       id: 4,
-      name: 'Morning Yoga Flow',
-      duration: '25 min',
-      difficulty: 'Beginner',
+      title: 'Abs Destroyer',
+      description: 'Séance intensive pour sculpter vos abdominaux',
+      duration: 20,
+      difficulty: 'Difficile',
+      calories: 180,
       exercises: 10,
-      calories: 150,
-      type: 'Flexibility',
-      rating: 4.8,
-      reviews: 234,
-      image: 'https://images.unsplash.com/photo-1506629905607-c26f4ba5ecf5?w=400&h=300&fit=crop'
+      category: 'abs',
+      image: '🏋️‍♂️',
+      color: 'from-purple-500 to-pink-500',
+      equipment: 'Aucun',
+      rating: 4.7,
+      participants: 142
     },
     {
       id: 5,
-      name: 'Power Lifting Basics',
-      duration: '50 min',
-      difficulty: 'Advanced',
-      exercises: 5,
-      calories: 400,
-      type: 'Strength',
-      rating: 4.9,
-      reviews: 189,
-      image: 'https://images.unsplash.com/photo-1566241134019-38c6b2c6e8f5?w=400&h=300&fit=crop'
+      title: 'Stretching Recovery',
+      description: 'Étirements pour la récupération après l\'effort',
+      duration: 15,
+      difficulty: 'Débutant',
+      calories: 80,
+      exercises: 12,
+      category: 'flexibility',
+      image: '🤸‍♀️',
+      color: 'from-indigo-500 to-purple-500',
+      equipment: 'Aucun',
+      rating: 4.5,
+      participants: 78
     },
     {
       id: 6,
-      name: 'Core Crusher',
-      duration: '20 min',
-      difficulty: 'Intermediate',
+      title: 'Boxing Fitness',
+      description: 'Entraînement de boxe pour la condition physique',
+      duration: 35,
+      difficulty: 'Intermédiaire',
+      calories: 320,
       exercises: 8,
-      calories: 200,
-      type: 'Core',
-      rating: 4.7,
-      reviews: 156,
-      image: 'https://images.unsplash.com/photo-1598971457999-ca4ef48a9c42?w=400&h=300&fit=crop'
+      category: 'boxing',
+      image: '🥊',
+      color: 'from-gray-700 to-gray-900',
+      equipment: 'Gants',
+      rating: 4.8,
+      participants: 167
     }
+  ]);
+
+  // Filtres disponibles
+  const filters = [
+    { id: 'all', label: 'Tous', icon: BookOpen },
+    { id: 'cardio', label: 'Cardio', icon: Heart },
+    { id: 'strength', label: 'Force', icon: Dumbbell },
+    { id: 'yoga', label: 'Yoga', icon: Users },
+    { id: 'abs', label: 'Abdos', icon: Target },
+    { id: 'flexibility', label: 'Flexibilité', icon: Zap }
   ];
 
+  // Entraînements recommandés
+  const [recommendedWorkouts] = useState([
+    {
+      id: 'rec1',
+      title: 'Programme Débutant',
+      description: '4 semaines pour débuter en douceur',
+      duration: '4 semaines',
+      workouts: 12,
+      image: '🌟',
+      color: 'from-yellow-400 to-orange-500'
+    },
+    {
+      id: 'rec2',
+      title: 'Perte de Poids Express',
+      description: 'Programme intensif 6 semaines',
+      duration: '6 semaines',
+      workouts: 24,
+      image: '⚡',
+      color: 'from-red-500 to-pink-500'
+    },
+    {
+      id: 'rec3',
+      title: 'Muscle Building',
+      description: 'Construire du muscle efficacement',
+      duration: '8 semaines',
+      workouts: 32,
+      image: '🏗️',
+      color: 'from-blue-500 to-indigo-500'
+    }
+  ]);
+
+  // Statistiques utilisateur
+  const [userStats] = useState({
+    completedWorkouts: 23,
+    totalMinutes: 890,
+    streak: 5,
+    favorite: 'HIIT Cardio'
+  });
+
+  // Filtrer les entraînements
+  const filteredWorkouts = workouts.filter(workout => {
+    const matchesFilter = activeFilter === 'all' || workout.category === activeFilter;
+    const matchesSearch = workout.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         workout.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  // Démarrer un entraînement
+  const handleStartWorkout = async (workout) => {
+    setIsStarting(true);
+    setSelectedWorkout(workout);
+    
+    // Simulation du démarrage
+    setTimeout(() => {
+      setIsStarting(false);
+      console.log(`Démarrage de l'entraînement: ${workout.title}`);
+      // Ici vous pouvez naviguer vers la page d'entraînement
+    }, 2000);
+  };
+
+  // Obtenir l'icône de difficulté
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
-      case 'Beginner': return 'success';
-      case 'Intermediate': return 'warning';
-      case 'Advanced': return 'danger';
-      default: return 'secondary';
+      case 'Débutant': return 'text-green-500';
+      case 'Intermédiaire': return 'text-yellow-500';
+      case 'Difficile': return 'text-red-500';
+      default: return 'text-gray-500';
     }
   };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'Strength': return 'primary';
-      case 'Cardio': return 'danger';
-      case 'Flexibility': return 'success';
-      case 'Core': return 'warning';
-      case 'Mixed': return 'info';
-      default: return 'secondary';
-    }
-  };
-
-  const WorkoutCard = ({ workout, isRecommended = false }) => (
-    <div className="col-lg-4 col-md-6 mb-4">
-      <div className="workout-card h-100 card border-0 shadow-sm">
-        <div className="card-img-container position-relative">
-          <img
-            src={workout.image}
-            alt={workout.name}
-            className="card-img-top"
-            style={{height: '200px', objectFit: 'cover'}}
-          />
-          <div className="card-img-overlay d-flex align-items-start justify-content-between p-3">
-            <span className={`badge bg-${getDifficultyColor(workout.difficulty)}`}>
-              {workout.difficulty}
-            </span>
-            <div className="d-flex gap-2">
-              <button className="btn btn-sm btn-light rounded-circle">
-                <i className="fas fa-heart"></i>
-              </button>
-              <button className="btn btn-sm btn-light rounded-circle">
-                <i className="fas fa-share"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-start mb-2">
-            <h5 className="card-title fw-bold mb-0">{workout.name}</h5>
-            <span className={`badge bg-${getTypeColor(workout.type)}`}>
-              {workout.type}
-            </span>
-          </div>
-          
-          <div className="workout-stats mb-3">
-            <div className="row g-2 text-center">
-              <div className="col-4">
-                <div className="stat-item">
-                  <i className="fas fa-clock text-muted"></i>
-                  <div className="fw-semibold">{workout.duration}</div>
-                </div>
-              </div>
-              <div className="col-4">
-                <div className="stat-item">
-                  <i className="fas fa-dumbbell text-muted"></i>
-                  <div className="fw-semibold">{workout.exercises}</div>
-                </div>
-              </div>
-              <div className="col-4">
-                <div className="stat-item">
-                  <i className="fas fa-fire text-muted"></i>
-                  <div className="fw-semibold">{workout.calories}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {!isRecommended && (
-            <div className="progress-section mb-3">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <small className="text-muted">Progress</small>
-                <small className="text-muted">{workout.progress}%</small>
-              </div>
-              <div className="progress" style={{height: '6px'}}>
-                <div 
-                  className="progress-bar bg-primary" 
-                  style={{width: `${workout.progress}%`}}
-                ></div>
-              </div>
-              <small className="text-muted">Last: {workout.lastPerformed}</small>
-            </div>
-          )}
-          
-          {isRecommended && (
-            <div className="rating-section mb-3">
-              <div className="d-flex align-items-center">
-                <div className="stars me-2">
-                  {[...Array(5)].map((_, i) => (
-                    <i 
-                      key={i}
-                      className={`fas fa-star ${i < Math.floor(workout.rating) ? 'text-warning' : 'text-muted'}`}
-                    ></i>
-                  ))}
-                </div>
-                <span className="fw-semibold">{workout.rating}</span>
-                <span className="text-muted ms-2">({workout.reviews} reviews)</span>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <div className="card-footer bg-transparent border-0 pt-0">
-          <div className="d-flex gap-2">
-            <button className="btn btn-primary flex-grow-1">
-              <i className="fas fa-play me-2"></i>
-              {isRecommended ? 'Try Now' : 'Continue'}
-            </button>
-            <button className="btn btn-outline-secondary">
-              <i className="fas fa-info-circle"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="workouts-page">
-      {/* Header */}
-      <div className="page-header bg-primary text-white py-5">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-8">
-              <h1 className="display-4 fw-bold mb-3">My Workouts</h1>
-              <p className="lead mb-0">
-                Track your fitness journey with personalized workout plans and routines.
-              </p>
+      {/* Header Section */}
+      <div className="workouts-header">
+        <div className="header-content">
+          <div className="header-left">
+            <h1 className="page-title">Mes Entraînements</h1>
+            <p className="page-subtitle">
+              Choisissez votre entraînement et dépassez vos limites !
+            </p>
+          </div>
+          <div className="header-stats">
+            <div className="stat-item">
+              <div className="stat-number">{userStats.completedWorkouts}</div>
+              <div className="stat-label">Terminés</div>
             </div>
-            <div className="col-lg-4 text-lg-end">
-              <div className="d-flex gap-3 justify-content-lg-end">
-                <button className="btn btn-outline-light">
-                  <i className="fas fa-plus me-2"></i>Create Workout
-                </button>
-                <button className="btn btn-light">
-                  <i className="fas fa-calendar me-2"></i>Schedule
-                </button>
-              </div>
+            <div className="stat-item">
+              <div className="stat-number">{userStats.totalMinutes}m</div>
+              <div className="stat-label">Total</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{userStats.streak}</div>
+              <div className="stat-label">Série</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container py-5">
-        {/* Quick Stats */}
-        <div className="row mb-5">
-          <div className="col-lg-3 col-md-6 mb-4">
-            <div className="stat-card card border-0 shadow-sm">
-              <div className="card-body text-center">
-                <div className="stat-icon mb-3">
-                  <i className="fas fa-calendar-week fa-2x text-primary"></i>
-                </div>
-                <h4 className="fw-bold mb-1">12</h4>
-                <p className="text-muted mb-0">Workouts This Week</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-3 col-md-6 mb-4">
-            <div className="stat-card card border-0 shadow-sm">
-              <div className="card-body text-center">
-                <div className="stat-icon mb-3">
-                  <i className="fas fa-fire fa-2x text-danger"></i>
-                </div>
-                <h4 className="fw-bold mb-1">2,850</h4>
-                <p className="text-muted mb-0">Calories Burned</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-3 col-md-6 mb-4">
-            <div className="stat-card card border-0 shadow-sm">
-              <div className="card-body text-center">
-                <div className="stat-icon mb-3">
-                  <i className="fas fa-clock fa-2x text-warning"></i>
-                </div>
-                <h4 className="fw-bold mb-1">8.5</h4>
-                <p className="text-muted mb-0">Hours Trained</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-3 col-md-6 mb-4">
-            <div className="stat-card card border-0 shadow-sm">
-              <div className="card-body text-center">
-                <div className="stat-icon mb-3">
-                  <i className="fas fa-trophy fa-2x text-success"></i>
-                </div>
-                <h4 className="fw-bold mb-1">7</h4>
-                <p className="text-muted mb-0">Goals Achieved</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Quick Actions */}
+      <div className="quick-actions-section">
+        <button className="quick-action-btn primary">
+          <Plus className="w-5 h-5" />
+          <span>Créer un entraînement</span>
+        </button>
+        <button className="quick-action-btn secondary">
+          <Calendar className="w-5 h-5" />
+          <span>Programmer</span>
+        </button>
+        <button className="quick-action-btn secondary">
+          <TrendingUp className="w-5 h-5" />
+          <span>Mes progrès</span>
+        </button>
+      </div>
 
-        {/* Tabs Navigation */}
-        <div className="workout-tabs mb-4">
-          <ul className="nav nav-pills nav-fill">
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === 'my-workouts' ? 'active' : ''}`}
-                onClick={() => setActiveTab('my-workouts')}
-              >
-                <i className="fas fa-dumbbell me-2"></i>My Workouts
-              </button>
-            </li>
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === 'recommended' ? 'active' : ''}`}
-                onClick={() => setActiveTab('recommended')}
-              >
-                <i className="fas fa-star me-2"></i>Recommended
-              </button>
-            </li>
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeTab === 'history' ? 'active' : ''}`}
-                onClick={() => setActiveTab('history')}
-              >
-                <i className="fas fa-history me-2"></i>History
-              </button>
-            </li>
-          </ul>
+      {/* Recommended Programs */}
+      <section className="recommended-section">
+        <h2 className="section-title">Programmes Recommandés</h2>
+        <div className="recommended-grid">
+          {recommendedWorkouts.map(program => (
+            <div key={program.id} className="program-card">
+              <div className={`program-bg bg-gradient-to-br ${program.color}`}>
+                <div className="program-icon">{program.image}</div>
+              </div>
+              <div className="program-content">
+                <h3 className="program-title">{program.title}</h3>
+                <p className="program-description">{program.description}</p>
+                <div className="program-meta">
+                  <span className="program-duration">
+                    <Clock className="w-4 h-4" />
+                    {program.duration}
+                  </span>
+                  <span className="program-workouts">
+                    {program.workouts} séances
+                  </span>
+                </div>
+                <button className="program-cta">
+                  Commencer
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
+      </section>
 
-        {/* Tab Content */}
-        <div className="tab-content">
-          {activeTab === 'my-workouts' && (
-            <div className="row">
-              {myWorkouts.map(workout => (
-                <WorkoutCard key={workout.id} workout={workout} />
-              ))}
-            </div>
-          )}
-          
-          {activeTab === 'recommended' && (
-            <div className="row">
-              {recommendedWorkouts.map(workout => (
-                <WorkoutCard key={workout.id} workout={workout} isRecommended={true} />
-              ))}
-            </div>
-          )}
-          
-          {activeTab === 'history' && (
-            <div className="text-center py-5">
-              <i className="fas fa-history fa-3x text-muted mb-3"></i>
-              <h4 className="text-muted">Workout History</h4>
-              <p className="text-muted mb-4">
-                Your completed workouts will appear here.
-              </p>
-              <button className="btn btn-primary">Start Your First Workout</button>
-            </div>
-          )}
+      {/* Filters and Search */}
+      <div className="controls-section">
+        <div className="search-container">
+          <Search className="search-icon" />
+          <input
+            type="text"
+            placeholder="Rechercher un entraînement..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        
+        <div className="filters-container">
+          {filters.map(filter => (
+            <button
+              key={filter.id}
+              onClick={() => setActiveFilter(filter.id)}
+              className={`filter-btn ${activeFilter === filter.id ? 'active' : ''}`}
+            >
+              <filter.icon className="w-4 h-4" />
+              <span>{filter.label}</span>
+            </button>
+          ))}
         </div>
       </div>
+
+      {/* Workouts Grid */}
+      <section className="workouts-section">
+        <div className="workouts-grid">
+          {filteredWorkouts.map(workout => (
+            <div key={workout.id} className="workout-card">
+              <div className={`workout-header bg-gradient-to-br ${workout.color}`}>
+                <div className="workout-emoji">{workout.image}</div>
+                <div className="workout-rating">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span>{workout.rating}</span>
+                </div>
+              </div>
+              
+              <div className="workout-content">
+                <h3 className="workout-title">{workout.title}</h3>
+                <p className="workout-description">{workout.description}</p>
+                
+                <div className="workout-details">
+                  <div className="detail-item">
+                    <Clock className="w-4 h-4" />
+                    <span>{workout.duration} min</span>
+                  </div>
+                  <div className="detail-item">
+                    <Flame className="w-4 h-4" />
+                    <span>{workout.calories} cal</span>
+                  </div>
+                  <div className="detail-item">
+                    <Target className="w-4 h-4" />
+                    <span>{workout.exercises} exercices</span>
+                  </div>
+                </div>
+                
+                <div className="workout-meta">
+                  <span className={`difficulty-badge ${getDifficultyColor(workout.difficulty)}`}>
+                    {workout.difficulty}
+                  </span>
+                  <span className="participants">
+                    <Users className="w-4 h-4" />
+                    {workout.participants}
+                  </span>
+                </div>
+                
+                <div className="workout-footer">
+                  <div className="equipment-info">
+                    <span className="equipment-label">Équipement:</span>
+                    <span className="equipment-value">{workout.equipment}</span>
+                  </div>
+                  <button 
+                    onClick={() => handleStartWorkout(workout)}
+                    disabled={isStarting && selectedWorkout?.id === workout.id}
+                    className="start-btn"
+                  >
+                    {isStarting && selectedWorkout?.id === workout.id ? (
+                      <>
+                        <div className="spinner"></div>
+                        <span>Démarrage...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-5 h-5" />
+                        <span>Commencer</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {filteredWorkouts.length === 0 && (
+          <div className="empty-state">
+            <div className="empty-icon">🔍</div>
+            <h3 className="empty-title">Aucun entraînement trouvé</h3>
+            <p className="empty-description">
+              Essayez de modifier vos critères de recherche ou explorez d'autres catégories.
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
 };

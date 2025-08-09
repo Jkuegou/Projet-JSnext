@@ -786,6 +786,22 @@
 
 // export default App;
 
+import React from 'react';
+import { AppProviders } from './providers/AppProviders';
+import AppRouter from './router/AppRouter';
+import './App.css';
+
+function App() {
+  return (
+    <AppProviders>
+      <div className="App" style={{ minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+        <AppRouter />
+      </div>
+    </AppProviders>
+  );
+}
+
+export default App;
 // import React from 'react';
 // import { AppProviders } from './providers/AppProviders';
 // import AppRouter from './router/AppRouter';
@@ -806,31 +822,31 @@
 
 // export default App;
 // App.js - Version temporaire sans les composants manquants
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-// import { NotificationProvider } from './context/NotificationContext';
-import AppRouter from './router/AppRouter';
-import Layout from './components/layout/Layout';
-import './App.css';
+// import React from 'react';
+// import { BrowserRouter } from 'react-router-dom';
+// import { AuthProvider } from './context/AuthContext';
+// // import { NotificationProvider } from './context/NotificationContext';
+// import AppRouter from './router/AppRouter';
+// import Layout from './components/layout/Layout';
+// import './App.css';
 
-function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        {/* <NotificationProvider> */}
-          <div className="App" style={{ minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
-            <Layout>
-              <AppRouter />
-            </Layout>
-          </div>
-        {/* </NotificationProvider> */}
-      </AuthProvider>
-    </BrowserRouter>
-  );
-}
+// function App() {
+//   return (
+//     <BrowserRouter>
+//       <AuthProvider>
+//         {/* <NotificationProvider> */}
+//           <div className="App" style={{ minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+//             <Layout>
+//               <AppRouter />
+//             </Layout>
+//           </div>
+//         {/* </NotificationProvider> */}
+//       </AuthProvider>
+//     </BrowserRouter>
+//   );
+// }
 
-export default App;
+// export default App;
 // import React from 'react';
 // import { Routes, Route, Navigate } from 'react-router-dom';
 // import { useAuth } from './context/AuthContext';

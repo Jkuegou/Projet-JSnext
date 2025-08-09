@@ -1594,6 +1594,8 @@ const Button = ({ children, variant = 'primary', size = 'md', className = '', ..
     'outline-light': 'border-2 border-light text-light bg-transparent backdrop-blur',
     'outline-primary': 'border-2 border-primary text-primary bg-transparent'
   };
+  const isAuthenticated = !!localStorage.getItem('token');
+const role = localStorage.getItem('role');
   
   const sizeClasses = {
     sm: 'px-3 py-2 fs-6 rounded-pill',

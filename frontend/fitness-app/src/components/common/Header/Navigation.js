@@ -103,15 +103,80 @@
 // };
 
 // export default Navigation;
+// import React, { useState } from 'react';
+// import Button from '../Button/Button';
+// import { useAuth } from '../context/AuthContext';
+// import { useNavigate } from 'react-router-dom';
+
+// const Navigation = () => {
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const { user } = useAuth(); // ✅ déplacer ici
+//   const navigate = useNavigate(); // ✅ déplacer ici
+
+//   return (
+//     <>
+//       <button 
+//         className="navbar-toggler border-0" 
+//         type="button" 
+//         onClick={() => setIsMenuOpen(!isMenuOpen)}
+//         style={{ boxShadow: 'none' }}
+//       >
+//         <span className="navbar-toggler-icon"></span>
+//       </button>
+      
+//       <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`}>
+//         <ul className="navbar-nav ms-auto me-4">
+//           <li className="nav-item">
+//             <a className="nav-link px-3 fw-medium position-relative" href="/">
+//               Home
+//               <span className="position-absolute bottom-0 start-50 translate-middle-x bg-primary" 
+//                     style={{ width: '4px', height: '4px', borderRadius: '50%' }}></span>
+//             </a>
+//           </li>
+//           <li className="nav-item">
+//             <a className="nav-link px-3 fw-medium" href="/service">Service</a>
+//           </li>
+//           <li className="nav-item">
+//             <a className="nav-link px-3 fw-medium" href="/pricing">Pricing</a>
+//           </li>
+//           <li className="nav-item">
+//             <a className="nav-link px-3 fw-medium" href="/work">Our Work</a>
+//           </li>
+//         </ul>
+        
+//         {user ? (
+//           <Button
+//             variant="outline-light"
+//             size="sm"
+//             onClick={() => navigate(user.role === 'admin' ? '/admin' : '/dashboard')}
+//           >
+//             Dashboard
+//           </Button>
+//         ) : (
+//           <Button className="text-black"
+//             variant="outline-light"
+//             size="sm"
+//             onClick={() => navigate('/login')}
+//           >
+//             Login
+//           </Button>
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// export default Navigation;
+
 import React, { useState } from 'react';
 import Button from '../Button/Button';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext'; // ✅ CORRECTION: bon chemin
 import { useNavigate } from 'react-router-dom';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useAuth(); // ✅ déplacer ici
-  const navigate = useNavigate(); // ✅ déplacer ici
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -153,7 +218,8 @@ const Navigation = () => {
             Dashboard
           </Button>
         ) : (
-          <Button className="text-black"
+          <Button 
+            className="text-black"
             variant="outline-light"
             size="sm"
             onClick={() => navigate('/login')}

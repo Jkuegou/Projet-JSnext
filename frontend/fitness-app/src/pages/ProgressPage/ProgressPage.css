@@ -1,4 +1,18 @@
 /* ProgressPage.css */
+
+.badges-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.badge-card {
+  background: gold;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
 .progress-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -1,178 +1,282 @@
-import React, { useState, useContext } from 'react'; 
-import { useNavigate } from 'react-router-dom'; 
-import { AuthProvider } from '../../context/AuthContext'; 
-import { useNotification } from '../../context/NotificationContext'; 
-import OnboardingStepWeight from './OnboardingSteps/OnboardingStepWeight'; 
-import OnboardingStepTrainingType from './OnboardingSteps/OnboardingStepTrainingType'; 
-import OnboardingStepSchedule from './OnboardingSteps/OnboardingStepSchedule'; 
-import OnboardingSummary from './OnboardingSteps/OnboardingSummary'; 
-import './Onboarding.css'; 
-const FitnessOnboarding = () => { 
-const navigate = useNavigate(); 
-const { user } = useContext(AuthProvider); 
-const { showNotification } = useContext(useNotification); 
-// State to manage current step and onboarding data 
-const [currentStep, setCurrentStep] = useState(1); 
-const [isLoading, setIsLoading] = useState(false); 
-const [onboardingData, setOnboardingData] = useState({
-  weight: '', 
-  trainingType: '',
-  trainingSchedule: '',
-});
-const totalSteps = 4; 
-// Handle moving to next step 
-const handleNextStep = () => { 
-    if (currentStep < totalSteps) { 
-      setCurrentStep(currentStep + 1); 
-    } 
-  }; 
- 
-  // Handle moving to previous step 
-  const handlePrevStep = () => { 
-    if (currentStep > 1) { 
-      setCurrentStep(currentStep - 1); 
-    } 
-  }; 
- 
-  // Update onboarding data 
-  const updateOnboardingData = (field, value) => { 
-    setOnboardingData(prev => ({ 
-      ...prev, 
-      [field]: value 
-    })); 
-  }; 
- 
-  // Validate current step data 
-  const validateCurrentStep = () => { 
-    switch (currentStep) { 
-      case 1: 
-        return onboardingData.weight && parseFloat(onboardingData.weight) > 0; 
-      case 2: 
-        return onboardingData.trainingType !== ''; 
-      case 3: 
-        return onboardingData.trainingSchedule !== ''; 
-      default: 
-        return true; 
-    } 
-  }; 
- 
-  // Submit onboarding data to backend 
-  const handleFinishOnboarding = async () => { 
-    try { 
-      setIsLoading(true); 
-       
-      const response = await fetch('/api/onboarding', { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${localStorage.getItem('token')}` 
-        }, 
-        body: JSON.stringify({ 
-          weight: parseFloat(onboardingData.weight), 
-          trainingType: onboardingData.trainingType, 
-          trainingSchedule: onboardingData.trainingSchedule 
-        }) 
-      }); 
- 
-      if (!response.ok) { 
-        throw new Error('Failed to save onboarding data'); 
-      } 
- 
-      const result = await response.json(); 
-       
-      showNotification('Onboarding completed successfully!', 'success'); 
-       
-      // Navigate to dashboard after successful onboarding 
-      navigate('/dashboard'); 
-       
-    } catch (error) { 
-      console.error('Error completing onboarding:', error); 
-      showNotification('Failed to complete onboarding. Please try again.', 'error'); 
-    } finally { 
-      setIsLoading(false); 
-    } 
-  }; 
- 
-  // Render current step component 
-  const renderCurrentStep = () => { 
-    switch (currentStep) { 
-      case 1: 
-        return ( 
-          <OnboardingStepWeight 
-            weight={onboardingData.weight} 
-            onWeightChange={(value) => updateOnboardingData('weight', value)} 
-          /> 
-        ); 
-      case 2: 
-        return ( 
-          <OnboardingStepTrainingType 
-            trainingType={onboardingData.trainingType} 
-            onTrainingTypeChange={(value) => updateOnboardingData('trainingType', value)} 
-          /> 
-        ); 
-      case 3: 
-        return ( 
-          <OnboardingStepSchedule 
-            trainingSchedule={onboardingData.trainingSchedule} 
-            onScheduleChange={(value) => updateOnboardingData('trainingSchedule', value)} 
-          /> 
-        ); 
-      case 4: 
-        return ( 
-          <OnboardingSummary 
-            data={onboardingData} 
-            onFinish={handleFinishOnboarding} 
-            isLoading={isLoading} 
-          /> 
-        ); 
-      default: 
-        return null; 
-    } 
-  }; 
- 
-  return ( 
-    <div className="onboarding-container"> 
-      <div className="onboarding-wrapper"> 
-        {/* Progress Bar */} 
-        <div className="progress-container"> 
-          <div className="progress-bar"> 
-            <div  
-              className="progress-fill"  
-              style={{ width: `${(currentStep / totalSteps) * 100}%` }} 
-            ></div> 
-          </div> 
-          <span className="progress-text"> 
-            Step {currentStep} of {totalSteps} 
-          </span> 
-        </div> 
- 
-        {/* Step Content */} 
-        <div className="step-content"> 
-          {renderCurrentStep()} 
-        </div> 
- 
-        {/* Navigation Buttons */} 
-        {currentStep < 4 && ( 
-          <div className="navigation-buttons"> 
-            <button  
-              className="btn btn-secondary" 
-              onClick={handlePrevStep} 
-              disabled={currentStep === 1} 
-            > 
-              Previous 
-            </button> 
-            <button  
-              className="btn btn-primary" 
-              onClick={handleNextStep} 
-              disabled={!validateCurrentStep()} 
-            > 
-              Next 
-            </button> 
-          </div> 
-        )} 
-      </div> 
-    </div> 
-  ); 
-}; 
- 
+// src/components/onboarding/FitnessOnboarding.js
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+// CORRECTION: Importer directement depuis le contexte
+import { useOnboarding } from '../../context/OnboardingContext';
+import { useAuth } from '../../hooks/useAuth';
+import PersonalInfo from './OnboardingSteps/PersonalInfo';
+import FitnessGoals from './OnboardingSteps/FitnessGoals';
+import TrainingSchedule from './OnboardingSteps/OnboardingStepSchedule';
+import FinalSetup from './OnboardingSteps/FinalSetup';
+import OnboardingSummary from './OnboardingSteps/OnboardingSummary';
+import './Onboarding.css';
+
+const FitnessOnboarding = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
+  const {
+    currentStep,
+    steps,
+    progressInfo,
+    goToNextStep,
+    goToPreviousStep,
+    completeOnboarding,
+    loading,
+    error,
+    onboardingData,
+    setUserInfo
+  } = useOnboarding();
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Animation d'entrée
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  // Initialiser les informations utilisateur si venant du register
+  useEffect(() => {
+    if (location.state?.fromRegistration && location.state?.userInfo) {
+      setUserInfo(location.state.userInfo);
+    } else if (user) {
+      // Si l'utilisateur est connecté, utiliser ses infos
+      setUserInfo({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        fullName: user.name || '',
+        userId: user.id
+      });
+    }
+  }, [location.state, user, setUserInfo]);
+
+  // Gérer la finalisation de l'onboarding
+  const handleComplete = async () => {
+    try {
+      await completeOnboarding();
+      
+      // Redirection vers le dashboard avec message de succès
+      navigate('/dashboard', {
+        state: {
+          welcomeMessage: `Bienvenue ${onboardingData.userInfo.firstName}! Votre profil fitness est maintenant configuré.`,
+          showWelcome: true
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors de la finalisation:', error);
+    }
+  };
+
+  // Composants des étapes
+  const stepComponents = {
+    0: PersonalInfo,
+    1: FitnessGoals,
+    2: TrainingSchedule,
+    3: FinalSetup
+  };
+
+  const CurrentStepComponent = stepComponents[currentStep];
+
+  return (
+    <div className="fitness-onboarding-container">
+      {/* Particules d'arrière-plan */}
+      <div className="onboarding-particles">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className={`particle particle-${i + 1}`}>
+            <i className={`bi ${['bi-heart-pulse', 'bi-lightning', 'bi-trophy', 'bi-star'][i % 4]}`}></i>
+          </div>
+        ))}
+      </div>
+
+      <div className="container-fluid h-100">
+        <div className="row h-100">
+          {/* Sidebar de progression */}
+          <div className="col-lg-4 col-md-5 onboarding-sidebar">
+            <div className={`sidebar-content ${isVisible ? 'animate-slide-left' : ''}`}>
+              {/* Header avec logo */}
+              <div className="onboarding-header">
+                <div className="brand-logo">
+                  <i className="bi bi-heart-pulse"></i>
+                  <span>JuniorFitness</span>
+                </div>
+                <h2>Complete Your Profile</h2>
+                <p>Let's personalize your fitness journey</p>
+              </div>
+
+              {/* Barre de progression globale */}
+              <div className="progress-section">
+                <div className="progress-info">
+                  <span>Step {progressInfo.currentStep} of {progressInfo.totalSteps}</span>
+                  <span>{progressInfo.percentage}%</span>
+                </div>
+                <div className="progress-bar-main">
+                  <div 
+                    className="progress-fill" 
+                    style={{ width: `${progressInfo.percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Liste des étapes */}
+              <div className="steps-list">
+                {steps.map((step, index) => (
+                  <div 
+                    key={step.key}
+                    className={`step-item ${
+                      index === currentStep ? 'active' : 
+                      index < currentStep ? 'completed' : 'pending'
+                    }`}
+                  >
+                    <div className="step-indicator">
+                      {index < currentStep ? (
+                        <i className="bi bi-check-circle-fill"></i>
+                      ) : (
+                        <span className="step-number">{index + 1}</span>
+                      )}
+                    </div>
+                    <div className="step-content">
+                      <h4>{step.title}</h4>
+                      <p>{step.description}</p>
+                    </div>
+                    {index === currentStep && (
+                      <div className="step-pulse"></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Informations utilisateur */}
+              {onboardingData.userInfo.firstName && (
+                <div className="user-welcome">
+                  <div className="welcome-card">
+                    <div className="user-avatar">
+                      <i className="bi bi-person-circle"></i>
+                    </div>
+                    <div className="welcome-text">
+                      <h4>Hello {onboardingData.userInfo.firstName}!</h4>
+                      <p>Building your perfect fitness plan...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Motivation */}
+              <div className="motivation-card">
+                <div className="motivation-icon">
+                  <i className="bi bi-lightning-charge"></i>
+                </div>
+                <blockquote>
+                  "Every expert was once a beginner. Every pro was once an amateur."
+                </blockquote>
+                <cite>- Robin Sharma</cite>
+              </div>
+            </div>
+          </div>
+
+          {/* Contenu principal */}
+          <div className="col-lg-8 col-md-7 onboarding-main">
+            <div className={`main-content ${isVisible ? 'animate-slide-right' : ''}`}>
+              {/* Header de l'étape */}
+              <div className="step-header">
+                <div className="step-icon">
+                  <i className={`bi ${progressInfo.currentStepInfo?.icon}`}></i>
+                </div>
+                <div className="step-title">
+                  <h1>{progressInfo.currentStepInfo?.title}</h1>
+                  <p>{progressInfo.currentStepInfo?.description}</p>
+                </div>
+              </div>
+
+              {/* Message d'erreur */}
+              {error && (
+                <div className="alert alert-danger">
+                  <i className="bi bi-exclamation-triangle"></i>
+                  {error}
+                </div>
+              )}
+
+              {/* Contenu de l'étape */}
+              <div className="step-content">
+                {CurrentStepComponent ? (
+                  <CurrentStepComponent />
+                ) : (
+                  <OnboardingSummary onComplete={handleComplete} />
+                )}
+              </div>
+
+              {/* Navigation */}
+              <div className="step-navigation">
+                <div className="nav-left">
+                  {!progressInfo.isFirstStep && (
+                    <button 
+                      type="button"
+                      onClick={goToPreviousStep}
+                      className="btn-outline-fitness"
+                      disabled={loading}
+                    >
+                      <i className="bi bi-arrow-left me-2"></i>
+                      Previous
+                    </button>
+                  )}
+                </div>
+                
+                <div className="nav-right">
+                  {progressInfo.isLastStep ? (
+                    <button 
+                      type="button"
+                      onClick={handleComplete}
+                      className="btn-fitness-primary"
+                      disabled={loading || !progressInfo.canProceed}
+                    >
+                      {loading ? (
+                        <>
+                          <div className="spinner-border spinner-border-sm me-2"></div>
+                          Finalizing...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-rocket-takeoff me-2"></i>
+                          Complete Setup
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <button 
+                      type="button"
+                      onClick={goToNextStep}
+                      className="btn-fitness-primary"
+                      disabled={loading || !progressInfo.canProceed}
+                    >
+                      Continue
+                      <i className="bi bi-arrow-right ms-2"></i>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Indicateur de sauvegarde */}
+              <div className="auto-save-indicator">
+                <i className="bi bi-cloud-check"></i>
+                <span>Progress saved automatically</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Skip option (optionnel) */}
+      <div className="skip-option">
+        <button 
+          type="button"
+          onClick={() => navigate('/dashboard')}
+          className="skip-btn"
+        >
+          Skip for now
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default FitnessOnboarding;

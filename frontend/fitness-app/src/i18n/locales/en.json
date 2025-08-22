@@ -1,0 +1,85 @@
+{
+  "common": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "workouts": "Workouts",
+    "exercises": "Exercises",
+    "profile": "Profile",
+    "home": "Home",
+    "service": "Service",
+    "pricing": "Pricing",
+    "ourWork": "Our Work",
+    "loading": "Loading...",
+    "welcome": "Welcome",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish"
+  },
+  "navigation": {
+    "home": "Home",
+    "service": "Service", 
+    "pricing": "Pricing",
+    "ourWork": "Our Work",
+    "dashboard": "Dashboard"
+  },
+  "homepage": {
+    "title": "Transform Your Body, Transform Your Life",
+    "subtitle": "Your ultimate fitness companion for a healthier lifestyle",
+    "getStarted": "Start Your Journey",
+    "learnMore": "Learn More"
+  },
+  "auth": {
+    "loginTitle": "Welcome Back",
+    "registerTitle": "Join JuniorFitness",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "loginButton": "Sign In",
+    "registerButton": "Create Account",
+    "forgotPassword": "Forgot Password?",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "todayWorkout": "Today's Workout",
+    "weeklyProgress": "Weekly Progress",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity"
+  },
+  "workouts": {
+    "title": "Workouts",
+    "create": "Create Workout",
+    "myWorkouts": "My Workouts",
+    "recommended": "Recommended",
+    "duration": "Duration",
+    "difficulty": "Difficulty",
+    "exercises": "Exercises"
+  },
+  "exercises": {
+    "title": "Exercises",
+    "search": "Search exercises...",
+    "category": "Category",
+    "muscleGroup": "Muscle Group",
+    "equipment": "Equipment"
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "fitnessGoals": "Fitness Goals",
+    "preferences": "Preferences",
+    "statistics": "Statistics"
+  }
+}

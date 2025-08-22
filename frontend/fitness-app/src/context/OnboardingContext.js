@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import api from '../utils/api';
-import { useAuth } from './AuthContext';
+// src/context/OnboardingContext.js
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import onboardingService from '../services/onboardingService';
 
 const OnboardingContext = createContext();
 
@@ -13,306 +13,352 @@ export const useOnboarding = () => {
 };
 
 export const OnboardingProvider = ({ children }) => {
-  const { user, isAuthenticated } = useAuth();
-  const [onboardingData, setOnboardingData] = useState(null);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [errors, setErrors] = useState({});
-
-  const [formData, setFormData] = useState({
-    personalInfo: {
+  const [onboardingData, setOnboardingData] = useState({
+    // Informations utilisateur de base (du register)
+    userInfo: {
       firstName: '',
       lastName: '',
+      email: '',
+      fullName: '',
+      userId: null
+    },
+    
+    // Étape 1: Informations personnelles
+    personalInfo: {
       age: '',
       gender: '',
       height: '',
       weight: '',
-      dateOfBirth: '',
+      activityLevel: ''
     },
+    
+    // Étape 2: Objectifs fitness
     fitnessGoals: {
-      primaryGoal: '',
+      primaryGoal: '', // weight_loss, muscle_gain, endurance, strength, general_fitness
       targetWeight: '',
-      activityLevel: '',
-      experience: '',
-      motivations: [],
+      targetDate: '',
+      experience: '', // beginner, intermediate, advanced
+      preferredWorkoutTypes: [] // cardio, strength, flexibility, sports
     },
-    healthInfo: {
-      medicalConditions: [],
-      injuries: [],
-      medications: [],
-      allergies: [],
-      notes: '',
+    
+    // Étape 3: Planning d'entraînement
+    trainingSchedule: {
+      workoutDays: [], // ['monday', 'tuesday', ...]
+      sessionDuration: '', // 30, 45, 60, 90 minutes
+      preferredTime: '', // morning, afternoon, evening
+      workoutLocation: '' // home, gym, outdoor
     },
-    measurements: {
-      chest: '',
-      waist: '',
-      hips: '',
-      arms: '',
-      thighs: '',
-      neck: '',
-      bodyFat: '',
-    },
-    workoutSchedule: {
-      daysPerWeek: 3,
-      preferredTime: '',
-      sessionDuration: '',
-      workoutTypes: [],
-      preferredLocation: '',
-    },
+    
+    // Étape 4: Préférences et notifications
     preferences: {
-      notifications: true,
-      emailUpdates: true,
-      shareProgress: false,
-      language: 'fr',
-      units: 'metric',
+      units: 'metric', // metric, imperial
+      notifications: {
+        workout: true,
+        progress: true,
+        challenges: true,
+        social: true
+      },
+      privacy: {
+        profileVisibility: 'friends', // public, friends, private
+        shareProgress: true,
+        allowChallenges: true
+      }
     }
   });
 
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Étapes du processus d'onboarding
   const steps = [
-    { id: 'personalInfo', title: 'Informations personnelles', icon: 'bi-person' },
-    { id: 'fitnessGoals', title: 'Objectifs fitness', icon: 'bi-target' },
-    { id: 'healthInfo', title: 'Informations santé', icon: 'bi-heart-pulse' },
-    { id: 'measurements', title: 'Mensurations', icon: 'bi-rulers' },
-    { id: 'workoutSchedule', title: 'Planning d\'entraînement', icon: 'bi-calendar-week' },
-    { id: 'preferences', title: 'Préférences', icon: 'bi-gear' }
+    {
+      key: 'personalInfo',
+      title: 'Personal Information',
+      description: 'Tell us about yourself',
+      icon: 'bi-person-badge',
+      required: ['age', 'gender', 'height', 'weight']
+    },
+    {
+      key: 'fitnessGoals',
+      title: 'Fitness Goals',
+      description: 'What do you want to achieve?',
+      icon: 'bi-bullseye',
+      required: ['primaryGoal', 'experience']
+    },
+    {
+      key: 'trainingSchedule',
+      title: 'Training Schedule',
+      description: 'When do you prefer to workout?',
+      icon: 'bi-calendar-week',
+      required: ['workoutDays', 'sessionDuration']
+    },
+    {
+      key: 'preferences',
+      title: 'Final Setup',
+      description: 'Customize your experience',
+      icon: 'bi-gear',
+      required: []
+    }
   ];
 
-  const loadOnboardingData = useCallback(async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const response = await api.get(`/onboarding/${user.id}`);
-      const data = response.data;
-      if (data) {
-        setOnboardingData(data);
-        setFormData(prev => ({ ...prev, ...data }));
-        setIsCompleted(data.completed || false);
-        setCurrentStep(data.currentStep || 0);
-      }
-    } catch (error) {
-      console.error("Erreur lors du chargement des données d'onboarding:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user && isAuthenticated) {
-      loadOnboardingData();
-    }
-  }, [user, isAuthenticated, loadOnboardingData]);
-
-  const saveOnboardingData = async (stepData, stepName) => {
-    if (!user) return;
-    try {
-      setLoading(true);
-      const updatedData = {
-        ...formData,
-        [stepName]: { ...formData[stepName], ...stepData },
-        userId: user.id,
-        currentStep,
-        lastUpdated: new Date().toISOString()
-      };
-      setFormData(updatedData);
-      const response = await api.put(`/onboarding/${user.id}`, updatedData);
-      const savedData = response.data;
-      setOnboardingData(savedData);
-      return savedData;
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
-      setErrors({ ...errors, save: error.response?.data?.message || 'Erreur de sauvegarde' });
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+  // Initialiser l'onboarding (appelé depuis Register)
+  const initializeOnboarding = () => {
+    setCurrentStep(0);
+    setIsCompleted(false);
+    setError(null);
   };
 
-  const completeOnboarding = async () => {
-    if (!user) return;
-    try {
-      setLoading(true);
-      const completedData = {
-        ...formData,
-        completed: true,
-        completedAt: new Date().toISOString(),
-        userId: user.id
-      };
-      const response = await api.post(`/onboarding/${user.id}/complete`, completedData);
-      const data = response.data;
-      setIsCompleted(true);
-      setOnboardingData(data);
-      setFormData(data);
-      return data;
-    } catch (error) {
-      console.error("Erreur lors de la finalisation de l'onboarding:", error);
-      setErrors({ ...errors, complete: error.response?.data?.message || 'Erreur de finalisation' });
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateStep = (stepIndex) => {
-    if (stepIndex >= 0 && stepIndex < steps.length) {
-      setCurrentStep(stepIndex);
-    }
-  };
-
-  const nextStep = async () => {
-    const currentStepData = steps[currentStep];
-    if (currentStepData) {
-      try {
-        await saveOnboardingData(formData[currentStepData.id], currentStepData.id);
-        if (currentStep < steps.length - 1) {
-          setCurrentStep(prev => prev + 1);
-        }
-      } catch (error) {
-        console.error("Erreur lors du passage à l'étape suivante:", error);
-      }
-    }
-  };
-
-  const prevStep = () => {
-    setCurrentStep(prev => Math.max(0, prev - 1));
-  };
-
-  const updateFormData = (stepName, data) => {
-    setFormData(prev => ({
+  // Définir les informations utilisateur (depuis Register)
+  const setUserInfo = (userInfo) => {
+    setOnboardingData(prev => ({
       ...prev,
-      [stepName]: { ...prev[stepName], ...data }
+      userInfo: { ...prev.userInfo, ...userInfo }
     }));
   };
 
-  const validateStep = (stepName) => {
-    const stepErrors = {};
-    const stepData = formData[stepName];
-    switch (stepName) {
-      case 'personalInfo':
-        if (!stepData.firstName?.trim()) stepErrors.firstName = 'Prénom requis';
-        if (!stepData.lastName?.trim()) stepErrors.lastName = 'Nom requis';
-        if (!stepData.age || stepData.age < 13 || stepData.age > 100) {
-          stepErrors.age = 'Âge entre 13 et 100 ans requis';
-        }
-        if (!stepData.gender) stepErrors.gender = 'Genre requis';
-        if (!stepData.height || stepData.height < 100 || stepData.height > 250) {
-          stepErrors.height = 'Taille entre 100 et 250 cm requise';
-        }
-        if (!stepData.weight || stepData.weight < 30 || stepData.weight > 300) {
-          stepErrors.weight = 'Poids entre 30 et 300 kg requis';
-        }
-        break;
-      case 'fitnessGoals':
-        if (!stepData.primaryGoal) stepErrors.primaryGoal = 'Objectif principal requis';
-        if (!stepData.activityLevel) stepErrors.activityLevel = 'Niveau d\'activité requis';
-        if (!stepData.experience) stepErrors.experience = 'Niveau d\'expérience requis';
-        break;
-      case 'workoutSchedule':
-        if (!stepData.daysPerWeek || stepData.daysPerWeek < 1 || stepData.daysPerWeek > 7) {
-          stepErrors.daysPerWeek = 'Nombre de jours entre 1 et 7 requis';
-        }
-        if (!stepData.preferredTime) stepErrors.preferredTime = 'Heure préférée requise';
-        if (!stepData.sessionDuration) stepErrors.sessionDuration = 'Durée de session requise';
-        if (!stepData.workoutTypes?.length) stepErrors.workoutTypes = 'Au moins un type requis';
-        break;
-      default:
-        break;
-    }
-    setErrors({ ...errors, [stepName]: stepErrors });
-    return Object.keys(stepErrors).length === 0;
+  // Mettre à jour les données d'une étape
+  const updateStepData = (stepKey, data) => {
+    setOnboardingData(prev => ({
+      ...prev,
+      [stepKey]: { ...prev[stepKey], ...data }
+    }));
   };
 
-  const resetOnboarding = async () => {
-    try {
-      if (user) {
-        await api.delete(`/onboarding/${user.id}`);
+  // Valider une étape
+  const validateStep = (stepIndex) => {
+    const step = steps[stepIndex];
+    if (!step) return false;
+
+    const stepData = onboardingData[step.key];
+    if (!stepData) return false;
+
+    // Vérifier les champs obligatoires
+    return step.required.every(field => {
+      const value = stepData[field];
+      if (Array.isArray(value)) {
+        return value.length > 0;
       }
-      setCurrentStep(0);
-      setFormData({
-        personalInfo: {
-          firstName: '',
-          lastName: '',
-          age: '',
-          gender: '',
-          height: '',
-          weight: '',
-          dateOfBirth: '',
-        },
-        fitnessGoals: {
-          primaryGoal: '',
-          targetWeight: '',
-          activityLevel: '',
-          experience: '',
-          motivations: [],
-        },
-        healthInfo: {
-          medicalConditions: [],
-          injuries: [],
-          medications: [],
-          allergies: [],
-          notes: '',
-        },
-        measurements: {
-          chest: '',
-          waist: '',
-          hips: '',
-          arms: '',
-          thighs: '',
-          neck: '',
-          bodyFat: '',
-        },
-        workoutSchedule: {
-          daysPerWeek: 3,
-          preferredTime: '',
-          sessionDuration: '',
-          workoutTypes: [],
-          preferredLocation: '',
-        },
-        preferences: {
-          notifications: true,
-          emailUpdates: true,
-          shareProgress: false,
-          language: 'fr',
-          units: 'metric',
-        }
-      });
-      setIsCompleted(false);
-      setOnboardingData(null);
-      setErrors({});
-    } catch (error) {
-      console.error('Erreur lors de la réinitialisation:', error);
+      return value && value.toString().trim() !== '';
+    });
+  };
+
+  // Aller à l'étape suivante
+  const goToNextStep = () => {
+    if (currentStep < steps.length - 1) {
+      if (validateStep(currentStep)) {
+        setCurrentStep(currentStep + 1);
+        setError(null);
+      } else {
+        setError('Veuillez remplir tous les champs obligatoires');
+      }
     }
   };
 
-  const getProgressPercentage = () => {
-    return Math.round(((currentStep + 1) / steps.length) * 100);
+  // Aller à l'étape précédente
+  const goToPreviousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      setError(null);
+    }
   };
 
-  const canProceedToNext = () => {
-    const currentStepData = steps[currentStep];
-    return currentStepData ? validateStep(currentStepData.id) : false;
+  // Aller à une étape spécifique
+  const goToStep = (stepIndex) => {
+    if (stepIndex >= 0 && stepIndex < steps.length) {
+      setCurrentStep(stepIndex);
+      setError(null);
+    }
   };
+
+  // Finaliser l'onboarding
+  const completeOnboarding = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Valider toutes les étapes
+      const allStepsValid = steps.every((_, index) => validateStep(index));
+      
+      if (!allStepsValid) {
+        throw new Error('Certaines étapes ne sont pas complètement remplies');
+      }
+
+      // Préparer les données pour l'API
+      const completeProfile = {
+        userId: onboardingData.userInfo.userId,
+        personalInfo: onboardingData.personalInfo,
+        fitnessGoals: onboardingData.fitnessGoals,
+        trainingSchedule: onboardingData.trainingSchedule,
+        preferences: onboardingData.preferences,
+        completedAt: new Date().toISOString()
+      };
+
+      // Envoyer au backend
+      const response = await onboardingService.completeOnboarding(completeProfile);
+      
+      setIsCompleted(true);
+      
+      // Sauvegarder dans le localStorage pour persistance
+      localStorage.setItem('onboarding_completed', 'true');
+      localStorage.setItem('user_profile', JSON.stringify(completeProfile));
+      
+      return response;
+    } catch (error) {
+      setError(error.message || 'Erreur lors de la finalisation du profil');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculer le pourcentage de progression
+  const getProgressPercentage = () => {
+    if (isCompleted) return 100;
+    
+    let completedSteps = 0;
+    steps.forEach((_, index) => {
+      if (index < currentStep || validateStep(index)) {
+        completedSteps++;
+      }
+    });
+    
+    return Math.round((completedSteps / steps.length) * 100);
+  };
+
+  // Obtenir les données de progression pour l'affichage
+  const getProgressData = () => {
+    return {
+      currentStep: currentStep + 1,
+      totalSteps: steps.length,
+      percentage: getProgressPercentage(),
+      currentStepInfo: steps[currentStep],
+      isLastStep: currentStep === steps.length - 1,
+      isFirstStep: currentStep === 0,
+      canProceed: validateStep(currentStep)
+    };
+  };
+
+  // Réinitialiser l'onboarding
+  const resetOnboarding = () => {
+    setOnboardingData({
+      userInfo: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        fullName: '',
+        userId: null
+      },
+      personalInfo: {
+        age: '',
+        gender: '',
+        height: '',
+        weight: '',
+        activityLevel: ''
+      },
+      fitnessGoals: {
+        primaryGoal: '',
+        targetWeight: '',
+        targetDate: '',
+        experience: '',
+        preferredWorkoutTypes: []
+      },
+      trainingSchedule: {
+        workoutDays: [],
+        sessionDuration: '',
+        preferredTime: '',
+        workoutLocation: ''
+      },
+      preferences: {
+        units: 'metric',
+        notifications: {
+          workout: true,
+          progress: true,
+          challenges: true,
+          social: true
+        },
+        privacy: {
+          profileVisibility: 'friends',
+          shareProgress: true,
+          allowChallenges: true
+        }
+      }
+    });
+    setCurrentStep(0);
+    setIsCompleted(false);
+    setError(null);
+    localStorage.removeItem('onboarding_completed');
+    localStorage.removeItem('user_profile');
+  };
+
+  // Sauvegarder le progrès localement
+  const saveProgress = () => {
+    localStorage.setItem('onboarding_progress', JSON.stringify({
+      onboardingData,
+      currentStep,
+      timestamp: new Date().toISOString()
+    }));
+  };
+
+  // Charger le progrès sauvegardé
+  const loadProgress = () => {
+    try {
+      const saved = localStorage.getItem('onboarding_progress');
+      if (saved) {
+        const { onboardingData: savedData, currentStep: savedStep } = JSON.parse(saved);
+        setOnboardingData(savedData);
+        setCurrentStep(savedStep);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du progrès:', error);
+    }
+  };
+
+  // Vérifier si l'onboarding est déjà complété
+  useEffect(() => {
+    const completed = localStorage.getItem('onboarding_completed');
+    if (completed === 'true') {
+      setIsCompleted(true);
+    } else {
+      loadProgress();
+    }
+  }, []);
+
+  // Sauvegarder automatiquement le progrès
+  useEffect(() => {
+    if (!isCompleted) {
+      saveProgress();
+    }
+  }, [onboardingData, currentStep, isCompleted]);
 
   const value = {
+    // État
     onboardingData,
-    formData,
+    currentStep,
     isCompleted,
     loading,
-    errors,
-    currentStep,
+    error,
     steps,
-    saveOnboardingData,
+    
+    // Actions
+    initializeOnboarding,
+    setUserInfo,
+    updateStepData,
+    goToNextStep,
+    goToPreviousStep,
+    goToStep,
     completeOnboarding,
-    loadOnboardingData,
-    updateStep,
-    nextStep,
-    prevStep,
-    updateFormData,
-    validateStep,
     resetOnboarding,
+    validateStep,
+    
+    // Utilitaires
     getProgressPercentage,
-    canProceedToNext,
-    setFormData: updateFormData // Legacy
+    getProgressData,
+    
+    // Raccourcis pour les données courantes
+    currentStepData: onboardingData[steps[currentStep]?.key] || {},
+    progressInfo: getProgressData()
   };
 
   return (
@@ -321,358 +367,3 @@ export const OnboardingProvider = ({ children }) => {
     </OnboardingContext.Provider>
   );
 };
-
-
-// import React, { createContext, useContext, useState, useEffect } from 'react';
-// import api from '../utils/api';
-// import { useAuth } from './AuthContext';
-
-// const OnboardingContext = createContext();
-
-// export const useOnboarding = () => {
-  
-//   const context = useContext(OnboardingContext);
-//   if (!context) {
-//     throw new Error('useOnboarding must be used within an OnboardingProvider');
-//   }
-//   return context;
-// };
-
-// export const OnboardingProvider = ({ children }) => {
-//   const { user, isAuthenticated } = useAuth();
-//   const [onboardingData, setOnboardingData] = useState(null);
-//   const [isCompleted, setIsCompleted] = useState(false);
-//   const [loading, setLoading] = useState(false);
-//   const [currentStep, setCurrentStep] = useState(0);
-//   const [errors, setErrors] = useState({});
-
-//   // Structure des données d'onboarding
-//   const [formData, setFormData] = useState({
-//     personalInfo: {
-//       firstName: '',
-//       lastName: '',
-//       age: '',
-//       gender: '',
-//       height: '',
-//       weight: '',
-//       dateOfBirth: '',
-//     },
-//     fitnessGoals: {
-//       primaryGoal: '', // lose_weight, gain_muscle, maintain_weight, improve_endurance
-//       targetWeight: '',
-//       activityLevel: '', // sedentary, lightly_active, moderately_active, very_active, extremely_active
-//       experience: '', // beginner, intermediate, advanced
-//       motivations: [],
-//     },
-//     healthInfo: {
-//       medicalConditions: [],
-//       injuries: [],
-//       medications: [],
-//       allergies: [],
-//       notes: '',
-//     },
-//     measurements: {
-//       chest: '',
-//       waist: '',
-//       hips: '',
-//       arms: '',
-//       thighs: '',
-//       neck: '',
-//       bodyFat: '',
-//     },
-//     workoutSchedule: {
-//       daysPerWeek: 3,
-//       preferredTime: '', // morning, afternoon, evening
-//       sessionDuration: '', // 30, 45, 60, 90
-//       workoutTypes: [], // cardio, strength, flexibility, sports
-//       preferredLocation: '', // home, gym, outdoor
-//     },
-//     preferences: {
-//       notifications: true,
-//       emailUpdates: true,
-//       shareProgress: false,
-//       language: 'fr',
-//       units: 'metric', // metric, imperial
-//     }
-//   });
-
-//   // Étapes de l'onboarding
-//   const steps = [
-//     { id: 'personalInfo', title: 'Informations personnelles', icon: 'bi-person' },
-//     { id: 'fitnessGoals', title: 'Objectifs fitness', icon: 'bi-target' },
-//     { id: 'healthInfo', title: 'Informations santé', icon: 'bi-heart-pulse' },
-//     { id: 'measurements', title: 'Mensurations', icon: 'bi-rulers' },
-//     { id: 'workoutSchedule', title: 'Planning d\'entraînement', icon: 'bi-calendar-week' },
-//     { id: 'preferences', title: 'Préférences', icon: 'bi-gear' }
-//   ];
-
-//   // Charger les données d'onboarding au chargement
-//   useEffect(() => {
-//     if (user && isAuthenticated) {
-//       loadOnboardingData();
-//     }
-//   }, [user, isAuthenticated]);
-
-//   const loadOnboardingData = async () => {
-//     if (!user) return;
-    
-//     setLoading(true);
-//     try {
-//       const response = await api.get(`/onboarding/${user.id}`);
-//       const data = response.data;
-      
-//       if (data) {
-//         setOnboardingData(data);
-//         setFormData({ ...formData, ...data });
-//         setIsCompleted(data.completed || false);
-//         setCurrentStep(data.currentStep || 0);
-//       }
-//     } catch (error) {
-//       console.error('Erreur lors du chargement des données d\'onboarding:', error);
-//       // Si pas de données, on garde les valeurs par défaut
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const saveOnboardingData = async (stepData, stepName) => {
-//     if (!user) return;
-
-//     try {
-//       setLoading(true);
-//       const updatedData = {
-//         ...formData,
-//         [stepName]: { ...formData[stepName], ...stepData },
-//         userId: user.id,
-//         currentStep,
-//         lastUpdated: new Date().toISOString()
-//       };
-
-//       setFormData(updatedData);
-      
-//       const response = await api.put(`/onboarding/${user.id}`, updatedData);
-//       const savedData = response.data;
-//       setOnboardingData(savedData);
-      
-//       return savedData;
-//     } catch (error) {
-//       console.error('Erreur lors de la sauvegarde:', error);
-//       setErrors({ ...errors, save: error.response?.data?.message || 'Erreur de sauvegarde' });
-//       throw error;
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const completeOnboarding = async () => {
-//     if (!user) return;
-
-//     try {
-//       setLoading(true);
-//       const completedData = {
-//         ...formData,
-//         completed: true,
-//         completedAt: new Date().toISOString(),
-//         userId: user.id
-//       };
-
-//       const response = await api.post(`/onboarding/${user.id}/complete`, completedData);
-//       const data = response.data;
-      
-//       setIsCompleted(true);
-//       setOnboardingData(data);
-//       setFormData(data);
-      
-//       return data;
-//     } catch (error) {
-//       console.error('Erreur lors de la finalisation de l\'onboarding:', error);
-//       setErrors({ ...errors, complete: error.response?.data?.message || 'Erreur de finalisation' });
-//       throw error;
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const updateStep = (stepIndex) => {
-//     if (stepIndex >= 0 && stepIndex < steps.length) {
-//       setCurrentStep(stepIndex);
-//     }
-//   };
-
-//   const nextStep = async () => {
-//     const currentStepData = steps[currentStep];
-//     if (currentStepData) {
-//       try {
-//         await saveOnboardingData(formData[currentStepData.id], currentStepData.id);
-//         if (currentStep < steps.length - 1) {
-//           setCurrentStep(prev => prev + 1);
-//         }
-//       } catch (error) {
-//         console.error('Erreur lors du passage à l\'étape suivante:', error);
-//       }
-//     }
-//   };
-
-//   const prevStep = () => {
-//     setCurrentStep(prev => Math.max(0, prev - 1));
-//   };
-
-//   const updateFormData = (stepName, data) => {
-//     setFormData(prev => ({
-//       ...prev,
-//       [stepName]: { ...prev[stepName], ...data }
-//     }));
-//   };
-
-//   const validateStep = (stepName) => {
-//     const stepErrors = {};
-//     const stepData = formData[stepName];
-
-//     switch (stepName) {
-//       case 'personalInfo':
-//         if (!stepData.firstName?.trim()) stepErrors.firstName = 'Prénom requis';
-//         if (!stepData.lastName?.trim()) stepErrors.lastName = 'Nom requis';
-//         if (!stepData.age || stepData.age < 13 || stepData.age > 100) {
-//           stepErrors.age = 'Âge entre 13 et 100 ans requis';
-//         }
-//         if (!stepData.gender) stepErrors.gender = 'Genre requis';
-//         if (!stepData.height || stepData.height < 100 || stepData.height > 250) {
-//           stepErrors.height = 'Taille entre 100 et 250 cm requise';
-//         }
-//         if (!stepData.weight || stepData.weight < 30 || stepData.weight > 300) {
-//           stepErrors.weight = 'Poids entre 30 et 300 kg requis';
-//         }
-//         break;
-
-//       case 'fitnessGoals':
-//         if (!stepData.primaryGoal) stepErrors.primaryGoal = 'Objectif principal requis';
-//         if (!stepData.activityLevel) stepErrors.activityLevel = 'Niveau d\'activité requis';
-//         if (!stepData.experience) stepErrors.experience = 'Niveau d\'expérience requis';
-//         break;
-
-//       case 'workoutSchedule':
-//         if (!stepData.daysPerWeek || stepData.daysPerWeek < 1 || stepData.daysPerWeek > 7) {
-//           stepErrors.daysPerWeek = 'Nombre de jours par semaine entre 1 et 7';
-//         }
-//         if (!stepData.preferredTime) stepErrors.preferredTime = 'Heure préférée requise';
-//         if (!stepData.sessionDuration) stepErrors.sessionDuration = 'Durée de session requise';
-//         if (!stepData.workoutTypes?.length) stepErrors.workoutTypes = 'Au moins un type d\'entraînement requis';
-//         break;
-
-//       default:
-//         break;
-//     }
-
-//     setErrors({ ...errors, [stepName]: stepErrors });
-//     return Object.keys(stepErrors).length === 0;
-//   };
-
-//   const resetOnboarding = async () => {
-//     try {
-//       if (user) {
-//         await api.delete(`/onboarding/${user.id}`);
-//       }
-      
-//       setCurrentStep(0);
-//       setFormData({
-//         personalInfo: {
-//           firstName: '',
-//           lastName: '',
-//           age: '',
-//           gender: '',
-//           height: '',
-//           weight: '',
-//           dateOfBirth: '',
-//         },
-//         fitnessGoals: {
-//           primaryGoal: '',
-//           targetWeight: '',
-//           activityLevel: '',
-//           experience: '',
-//           motivations: [],
-//         },
-//         healthInfo: {
-//           medicalConditions: [],
-//           injuries: [],
-//           medications: [],
-//           allergies: [],
-//           notes: '',
-//         },
-//         measurements: {
-//           chest: '',
-//           waist: '',
-//           hips: '',
-//           arms: '',
-//           thighs: '',
-//           neck: '',
-//           bodyFat: '',
-//         },
-//         workoutSchedule: {
-//           daysPerWeek: 3,
-//           preferredTime: '',
-//           sessionDuration: '',
-//           workoutTypes: [],
-//           preferredLocation: '',
-//         },
-//         preferences: {
-//           notifications: true,
-//           emailUpdates: true,
-//           shareProgress: false,
-//           language: 'fr',
-//           units: 'metric',
-//         }
-//       });
-//       setIsCompleted(false);
-//       setOnboardingData(null);
-//       setErrors({});
-//     } catch (error) {
-//       console.error('Erreur lors de la réinitialisation:', error);
-//     }
-//   };
-
-//   const getProgressPercentage = () => {
-//     return Math.round(((currentStep + 1) / steps.length) * 100);
-//   };
-
-//   const canProceedToNext = () => {
-//     const currentStepData = steps[currentStep];
-//     return currentStepData ? validateStep(currentStepData.id) : false;
-//   };
-
-//   const value = {
-//     // Data
-//     onboardingData,
-//     formData,
-//     isCompleted,
-//     loading,
-//     errors,
-    
-//     // Navigation
-//     currentStep,
-//     steps,
-    
-//     // Actions
-//     saveOnboardingData,
-//     completeOnboarding,
-//     loadOnboardingData,
-//     updateStep,
-//     nextStep,
-//     prevStep,
-//     updateFormData,
-//     validateStep,
-//     resetOnboarding,
-    
-//     // Helpers
-//     getProgressPercentage,
-//     canProceedToNext,
-    
-//     // Legacy compatibility
-//     setFormData: updateFormData
-//   };
-
-//   return (
-//     <OnboardingContext.Provider value={value}>
-//       {children}
-//     </OnboardingContext.Provider>
-//   );
-// };

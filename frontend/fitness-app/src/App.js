@@ -786,22 +786,27 @@
 
 // export default App;
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { AppProviders } from './providers/AppProviders';
 import AppRouter from './router/AppRouter';
+import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
+import './i18n'; // Import de la configuration i18n
 import './App.css';
 
 function App() {
   return (
-    <AppProviders>
-      <div className="App" style={{ minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
-        <AppRouter />
-      </div>
-    </AppProviders>
+    <Suspense fallback={<LoadingSpinner />}>
+      <AppProviders>
+        <div className="App" style={{ minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+          <AppRouter />
+        </div>
+      </AppProviders>
+    </Suspense>
   );
 }
 
 export default App;
+
 // import React from 'react';
 // import { AppProviders } from './providers/AppProviders';
 // import AppRouter from './router/AppRouter';

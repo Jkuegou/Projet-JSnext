@@ -1048,12 +1048,408 @@
 // };
 
 // export default Login;
+// import React, { useState, useEffect } from 'react';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap-icons/font/bootstrap-icons.css';
+// import './Login.css';
+// import { useNavigate } from 'react-router-dom';
+// import { useAuth } from '../../../context/AuthContext';
+
+// // Hook pour les animations
+// const useFitnessAnimations = () => {
+//   useEffect(() => {
+//     // Animation des compteurs de statistiques
+//     const animateCounters = () => {
+//       const counters = document.querySelectorAll('.stat-number');
+      
+//       counters.forEach(counter => {
+//         const target = parseInt(counter.getAttribute('data-target'));
+//         const increment = target / 100;
+//         let current = 0;
+        
+//         const updateCounter = () => {
+//           if (current < target) {
+//             current += increment;
+//             counter.textContent = Math.floor(current).toLocaleString();
+//             requestAnimationFrame(updateCounter);
+//           } else {
+//             counter.textContent = target.toLocaleString();
+//           }
+//         };
+        
+//         setTimeout(() => {
+//           updateCounter();
+//         }, 1500);
+//       });
+//     };
+
+//     // Effet de parallaxe léger
+//     const handleParallax = () => {
+//       if (window.innerWidth > 768) {
+//         const handleMouseMove = (e) => {
+//           const particles = document.querySelectorAll('.particle');
+//           const x = e.clientX / window.innerWidth;
+//           const y = e.clientY / window.innerHeight;
+          
+//           particles.forEach((particle, index) => {
+//             const speed = (index + 1) * 0.3;
+//             const xPos = (x - 0.5) * speed * 10;
+//             const yPos = (y - 0.5) * speed * 10;
+            
+//             particle.style.transform = `translate(${xPos}px, ${yPos}px)`;
+//           });
+//         };
+        
+//         window.addEventListener('mousemove', handleMouseMove);
+//         return () => window.removeEventListener('mousemove', handleMouseMove);
+//       }
+//     };
+
+//     const cleanup = handleParallax();
+//     animateCounters();
+    
+//     return cleanup;
+//   }, []);
+// };
+
+// const Login = () => {
+//   const [formData, setFormData] = useState({
+//     email: '',
+//     password: '',
+//     rememberMe: false
+//   });
+
+//   const navigate = useNavigate();
+//   const { login } = useAuth();
+
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [message, setMessage] = useState({ type: '', text: '' });
+//   const [loading, setLoading] = useState(false);
+//   const [isVisible, setIsVisible] = useState(false);
+
+//   // Utiliser les animations
+//   useFitnessAnimations();
+
+//   // Animation d'entrée
+//   useEffect(() => {
+//     setIsVisible(true);
+//   }, []);
+
+//   const handleChange = (e) => {
+//     const { name, value, type, checked } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: type === 'checkbox' ? checked : value
+//     }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setMessage({ type: '', text: '' });
+
+//     try {
+//       const result = await login(formData.email, formData.password);
+      
+//       if (result.success) {
+//         setMessage({ 
+//           type: 'success', 
+//           text: 'Connexion réussie ! Redirection en cours...' 
+//         });
+
+//         console.log('Login successful:', result.user);
+        
+//         setTimeout(() => {
+//           if (result.user && result.user.role === 'admin') {
+//             navigate('/admin');
+//           } else {
+//             navigate('/dashboard');
+//           }
+//         }, 1500);
+//       } else {
+//         setMessage({ 
+//           type: 'error', 
+//           text: result.message || 'Erreur lors de la connexion' 
+//         });
+//       }
+      
+//     } catch (error) {
+//       setMessage({ 
+//         type: 'error', 
+//         text: error.message || 'Erreur lors de la connexion' 
+//       });
+//       console.error('Login error:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleForgotPassword = (e) => {
+//     e.preventDefault();
+//     setMessage({ type: 'info', text: 'Un email de récupération a été envoyé à votre adresse.' });
+//   };
+
+//   const handleRegister = () => {
+//     navigate("/register");
+//   };
+
+//   const togglePassword = () => {
+//     setShowPassword(!showPassword);
+//   };
+
+//   return (
+//     <div className="fitness-login-container">
+//       {/* Particules d'arrière-plan animées */}
+//       <div className="fitness-particles">
+//         {[...Array(6)].map((_, i) => (
+//           <div key={i} className={`particle particle-${i + 1}`}>
+//             <i className="bi bi-lightning-charge"></i>
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="container-fluid h-100">
+//         <div className="row h-100 g-0">
+//           {/* Panneau gauche - Hero Section */}
+//           <div className="col-lg-7 col-md-6 fitness-hero-section">
+//             <div className="hero-content">
+//               <div className={`brand-header ${isVisible ? 'animate-slide-up' : ''}`}>
+//                 <div className="brand-logo-fitness">
+//                   <div className="logo-icon">
+//                     <i className="bi bi-heart-pulse"></i>
+//                   </div>
+//                   <div className="brand-text">
+//                     <h1>JuniorFitness</h1>
+//                     <span className="tagline">Your Fitness Journey Starts Here</span>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               <div className={`hero-main ${isVisible ? 'animate-slide-up delay-1' : ''}`}>
+//                 <h2 className="hero-title">
+//                   Transform Your Body, <br />
+//                   <span className="gradient-text">Elevate Your Mind</span>
+//                 </h2>
+//                 <p className="hero-description">
+//                   Join thousands of fitness enthusiasts who are crushing their goals 
+//                   with our comprehensive training platform. Track workouts, monitor progress, 
+//                   and connect with a community that motivates you every step of the way.
+//                 </p>
+//               </div>
+
+//               {/* Statistiques animées */}
+//               <div className={`stats-grid ${isVisible ? 'animate-slide-up delay-2' : ''}`}>
+//                 <div className="stat-card">
+//                   <div className="stat-icon">
+//                     <i className="bi bi-people-fill"></i>
+//                   </div>
+//                   <div className="stat-content">
+//                     <h3 className="stat-number" data-target="15000">0</h3>
+//                     <p>Active Members</p>
+//                   </div>
+//                 </div>
+//                 <div className="stat-card">
+//                   <div className="stat-icon">
+//                     <i className="bi bi-trophy-fill"></i>
+//                   </div>
+//                   <div className="stat-content">
+//                     <h3 className="stat-number" data-target="850">0</h3>
+//                     <p>Workouts Completed</p>
+//                   </div>
+//                 </div>
+//                 <div className="stat-card">
+//                   <div className="stat-icon">
+//                     <i className="bi bi-graph-up-arrow"></i>
+//                   </div>
+//                   <div className="stat-content">
+//                     <h3 className="stat-number" data-target="95">0</h3>
+//                     <p>Success Rate</p>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Features */}
+//               <div className={`features-showcase ${isVisible ? 'animate-slide-up delay-3' : ''}`}>
+//                 <div className="feature-item">
+//                   <i className="bi bi-check-circle-fill"></i>
+//                   <span>Personalized Training Plans</span>
+//                 </div>
+//                 <div className="feature-item">
+//                   <i className="bi bi-check-circle-fill"></i>
+//                   <span>Real-time Progress Tracking</span>
+//                 </div>
+//                 <div className="feature-item">
+//                   <i className="bi bi-check-circle-fill"></i>
+//                   <span>Community Challenges</span>
+//                 </div>
+//                 <div className="feature-item">
+//                   <i className="bi bi-check-circle-fill"></i>
+//                   <span>Expert Nutrition Guidance</span>
+//                 </div>
+//               </div>
+
+//               {/* Image de sport */}
+//               <div className={`fitness-illustration ${isVisible ? 'animate-fade-in delay-4' : ''}`}>
+//                 <div className="illustration-container">
+//                   <div className="workout-person">
+//                     <i className="bi bi-person-arms-up"></i>
+//                   </div>
+//                   <div className="floating-elements">
+//                     <div className="floating-icon icon-1">
+//                       <i className="bi bi-heart-pulse"></i>
+//                     </div>
+//                     <div className="floating-icon icon-2">
+//                       <i className="bi bi-lightning-charge"></i>
+//                     </div>
+//                     <div className="floating-icon icon-3">
+//                       <i className="bi bi-trophy"></i>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Panneau droit - Formulaire de connexion */}
+//           <div className="col-lg-5 col-md-6 fitness-form-section">
+//             <div className={`login-form-container ${isVisible ? 'animate-slide-right' : ''}`}>
+//               <div className="form-header">
+//                 <h3>Welcome Back, Athlete!</h3>
+//                 <p>Ready to continue your fitness journey?</p>
+//               </div>
+
+//               {message.text && (
+//                 <div className={`alert alert-${message.type === 'success' ? 'success' : message.type === 'info' ? 'info' : 'danger'} fitness-alert`}>
+//                   <i className={`bi ${message.type === 'success' ? 'bi-check-circle' : message.type === 'info' ? 'bi-info-circle' : 'bi-exclamation-triangle'}`}></i>
+//                   {message.text}
+//                 </div>
+//               )}
+
+//               <form onSubmit={handleSubmit} className="fitness-form">
+//                 <div className="form-floating mb-3">
+//                   <input
+//                     type="email"
+//                     name="email"
+//                     className="form-control fitness-input"
+//                     id="floatingEmail"
+//                     placeholder="name@example.com"
+//                     value={formData.email}
+//                     onChange={handleChange}
+//                     required
+//                     disabled={loading}
+//                   />
+//                   <label htmlFor="floatingEmail">
+//                     <i className="bi bi-envelope me-2"></i>Email Address
+//                   </label>
+//                 </div>
+                
+//                 <div className="form-floating mb-3">
+//                   <input
+//                     type={showPassword ? 'text' : 'password'}
+//                     name="password"
+//                     className="form-control fitness-input"
+//                     id="floatingPassword"
+//                     placeholder="Password"
+//                     value={formData.password}
+//                     onChange={handleChange}
+//                     required
+//                     disabled={loading}
+//                   />
+//                   <label htmlFor="floatingPassword">
+//                     <i className="bi bi-lock me-2"></i>Password
+//                   </label>
+//                   <button 
+//                     type="button" 
+//                     className="password-toggle-btn" 
+//                     onClick={togglePassword}
+//                     disabled={loading}
+//                   >
+//                     <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+//                   </button>
+//                 </div>
+
+//                 <div className="form-options">
+//                   <div className="form-check">
+//                     <input
+//                       type="checkbox"
+//                       name="rememberMe"
+//                       className="form-check-input"
+//                       id="rememberMe"
+//                       checked={formData.rememberMe}
+//                       onChange={handleChange}
+//                       disabled={loading}
+//                     />
+//                     <label className="form-check-label" htmlFor="rememberMe">
+//                       Keep me logged in
+//                     </label>
+//                   </div>
+//                   <a href="#" onClick={handleForgotPassword} className="forgot-link">
+//                     Forgot Password?
+//                   </a>
+//                 </div>
+
+//                 <button type="submit" className="btn-fitness-primary" disabled={loading}>
+//                   {loading ? (
+//                     <>
+//                       <div className="spinner-border spinner-border-sm me-2" role="status">
+//                         <span className="visually-hidden">Loading...</span>
+//                       </div>
+//                       Signing In...
+//                     </>
+//                   ) : (
+//                     <>
+//                       <i className="bi bi-arrow-right-circle me-2"></i>
+//                       Start Training
+//                     </>
+//                   )}
+//                 </button>
+
+//                 <div className="divider-fitness">
+//                   <span>Or connect with</span>
+//                 </div>
+
+//                 <div className="social-login-fitness">
+//                   <button type="button" className="social-btn google">
+//                     <i className="bi bi-google"></i>
+//                   </button>
+//                   <button type="button" className="social-btn apple">
+//                     <i className="bi bi-apple"></i>
+//                   </button>
+//                   <button type="button" className="social-btn facebook">
+//                     <i className="bi bi-facebook"></i>
+//                   </button>
+//                 </div>
+
+//                 <div className="signup-section">
+//                   <p>New to fitness tracking?</p>
+//                   <button 
+//                     type="button" 
+//                     onClick={handleRegister} 
+//                     className="btn-outline-fitness"
+//                     disabled={loading}
+//                   >
+//                     <i className="bi bi-person-plus me-2"></i>
+//                     Create Account
+//                   </button>
+//                 </div>
+//               </form>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Login;
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import LanguageSwitcher from '../../common/LanguageSwitcher/LanguageSwitcher';
 
 // Hook pour les animations
 const useFitnessAnimations = () => {
@@ -1113,6 +1509,8 @@ const useFitnessAnimations = () => {
 };
 
 const Login = () => {
+  const { t } = useTranslation();
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -1154,7 +1552,7 @@ const Login = () => {
       if (result.success) {
         setMessage({ 
           type: 'success', 
-          text: 'Connexion réussie ! Redirection en cours...' 
+          text: t('JF.loginSuccess')
         });
 
         console.log('Login successful:', result.user);
@@ -1169,14 +1567,14 @@ const Login = () => {
       } else {
         setMessage({ 
           type: 'error', 
-          text: result.message || 'Erreur lors de la connexion' 
+          text: result.message || t('JF.loginError')
         });
       }
       
     } catch (error) {
       setMessage({ 
         type: 'error', 
-        text: error.message || 'Erreur lors de la connexion' 
+        text: error.message || t('JF.loginError')
       });
       console.error('Login error:', error);
     } finally {
@@ -1186,7 +1584,7 @@ const Login = () => {
 
   const handleForgotPassword = (e) => {
     e.preventDefault();
-    setMessage({ type: 'info', text: 'Un email de récupération a été envoyé à votre adresse.' });
+    setMessage({ type: 'info', text: t('JF.forgotPasswordSent') });
   };
 
   const handleRegister = () => {
@@ -1199,6 +1597,16 @@ const Login = () => {
 
   return (
     <div className="fitness-login-container">
+      {/* Sélecteur de langue en position fixe */}
+      <div style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        zIndex: 1000
+      }}>
+        <LanguageSwitcher variant="buttons" />
+      </div>
+
       {/* Particules d'arrière-plan animées */}
       <div className="fitness-particles">
         {[...Array(6)].map((_, i) => (
@@ -1219,21 +1627,19 @@ const Login = () => {
                     <i className="bi bi-heart-pulse"></i>
                   </div>
                   <div className="brand-text">
-                    <h1>FitTracker Pro</h1>
-                    <span className="tagline">Your Fitness Journey Starts Here</span>
+                    <h1>JuniorFitness</h1>
+                    <span className="tagline">{t('common.appTagline')}</span>
                   </div>
                 </div>
               </div>
 
               <div className={`hero-main ${isVisible ? 'animate-slide-up delay-1' : ''}`}>
                 <h2 className="hero-title">
-                  Transform Your Body, <br />
-                  <span className="gradient-text">Elevate Your Mind</span>
+                  {t('Start-here')}<br />
+                  <span className="gradient-text">{t('Enregistrement')}</span>
                 </h2>
                 <p className="hero-description">
-                  Join thousands of fitness enthusiasts who are crushing their goals 
-                  with our comprehensive training platform. Track workouts, monitor progress, 
-                  and connect with a community that motivates you every step of the way.
+                  {t('JF.heroDescription')}
                 </p>
               </div>
 
@@ -1245,7 +1651,7 @@ const Login = () => {
                   </div>
                   <div className="stat-content">
                     <h3 className="stat-number" data-target="15000">0</h3>
-                    <p>Active Members</p>
+                    <p>{t('JF.statsActiveMembers')}</p>
                   </div>
                 </div>
                 <div className="stat-card">
@@ -1254,7 +1660,7 @@ const Login = () => {
                   </div>
                   <div className="stat-content">
                     <h3 className="stat-number" data-target="850">0</h3>
-                    <p>Workouts Completed</p>
+                    <p>{t('JF.statsWorkoutsCompleted')}</p>
                   </div>
                 </div>
                 <div className="stat-card">
@@ -1263,7 +1669,7 @@ const Login = () => {
                   </div>
                   <div className="stat-content">
                     <h3 className="stat-number" data-target="95">0</h3>
-                    <p>Success Rate</p>
+                    <p>{t('JF.statsSuccessRate')}</p>
                   </div>
                 </div>
               </div>
@@ -1272,19 +1678,19 @@ const Login = () => {
               <div className={`features-showcase ${isVisible ? 'animate-slide-up delay-3' : ''}`}>
                 <div className="feature-item">
                   <i className="bi bi-check-circle-fill"></i>
-                  <span>Personalized Training Plans</span>
+                  <span>{t('JF.featurePersonalizedPlans')}</span>
                 </div>
                 <div className="feature-item">
                   <i className="bi bi-check-circle-fill"></i>
-                  <span>Real-time Progress Tracking</span>
+                  <span>{t('JF.featureProgressTracking')}</span>
                 </div>
                 <div className="feature-item">
                   <i className="bi bi-check-circle-fill"></i>
-                  <span>Community Challenges</span>
+                  <span>{t('JF.featureCommunity')}</span>
                 </div>
                 <div className="feature-item">
                   <i className="bi bi-check-circle-fill"></i>
-                  <span>Expert Nutrition Guidance</span>
+                  <span>{t('JF.featureNutrition')}</span>
                 </div>
               </div>
 
@@ -1314,8 +1720,8 @@ const Login = () => {
           <div className="col-lg-5 col-md-6 fitness-form-section">
             <div className={`login-form-container ${isVisible ? 'animate-slide-right' : ''}`}>
               <div className="form-header">
-                <h3>Welcome Back, Athlete!</h3>
-                <p>Ready to continue your fitness journey?</p>
+                <h3>{t('Bon Retour')}</h3>
+                <p>{t('Pret a continuer')}</p>
               </div>
 
               {message.text && (
@@ -1332,14 +1738,14 @@ const Login = () => {
                     name="email"
                     className="form-control fitness-input"
                     id="floatingEmail"
-                    placeholder="name@example.com"
+                    placeholder={t('JF.emailPlaceholder')}
                     value={formData.email}
                     onChange={handleChange}
                     required
                     disabled={loading}
                   />
                   <label htmlFor="floatingEmail">
-                    <i className="bi bi-envelope me-2"></i>Email Address
+                    <i className="bi bi-envelope me-2"></i>{t('Email')}
                   </label>
                 </div>
                 
@@ -1349,14 +1755,14 @@ const Login = () => {
                     name="password"
                     className="form-control fitness-input"
                     id="floatingPassword"
-                    placeholder="Password"
+                    placeholder={t('JF.passwordPlaceholder')}
                     value={formData.password}
                     onChange={handleChange}
                     required
                     disabled={loading}
                   />
                   <label htmlFor="floatingPassword">
-                    <i className="bi bi-lock me-2"></i>Password
+                    <i className="bi bi-lock me-2"></i>{t('JF.password')}
                   </label>
                   <button 
                     type="button" 
@@ -1380,11 +1786,11 @@ const Login = () => {
                       disabled={loading}
                     />
                     <label className="form-check-label" htmlFor="rememberMe">
-                      Keep me logged in
+                      {t('rester connecte')}
                     </label>
                   </div>
                   <a href="#" onClick={handleForgotPassword} className="forgot-link">
-                    Forgot Password?
+                    {t('JF.forgotPassword')}
                   </a>
                 </div>
 
@@ -1392,20 +1798,20 @@ const Login = () => {
                   {loading ? (
                     <>
                       <div className="spinner-border spinner-border-sm me-2" role="status">
-                        <span className="visually-hidden">Loading...</span>
+                        <span className="visually-hidden">{t('common.loading')}</span>
                       </div>
-                      Signing In...
+                      {t('JF.signingIn')}
                     </>
                   ) : (
                     <>
                       <i className="bi bi-arrow-right-circle me-2"></i>
-                      Start Training
+                      {t('Login')}
                     </>
                   )}
                 </button>
 
                 <div className="divider-fitness">
-                  <span>Or connect with</span>
+                  <span>{t('JF.orConnectWith')}</span>
                 </div>
 
                 <div className="social-login-fitness">
@@ -1421,7 +1827,7 @@ const Login = () => {
                 </div>
 
                 <div className="signup-section">
-                  <p>New to fitness tracking?</p>
+                  <p>{t('Nouveau-Dans_fitnessFitness')}</p>
                   <button 
                     type="button" 
                     onClick={handleRegister} 
@@ -1429,7 +1835,7 @@ const Login = () => {
                     disabled={loading}
                   >
                     <i className="bi bi-person-plus me-2"></i>
-                    Create Account
+                    {t('CreateAcount')}
                   </button>
                 </div>
               </form>

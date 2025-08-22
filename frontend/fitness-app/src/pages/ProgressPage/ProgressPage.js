@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './ProgressPage.css';
+import { getUnlockedBadges } from "../../utils/badges";
 
 const ProgressPage = () => {
+   const userStats = {
+    workouts: 5,  // nombre total d'entraînements
+    streak: 4,    // jours consécutifs
+    distance: 120 // en km
+  };
+
+  const unlocked = getUnlockedBadges(userStats);
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [weightData, setWeightData] = useState([
     { date: '2024-01-01', weight: 78 },
@@ -73,6 +81,17 @@ const ProgressPage = () => {
         <div className="header-content">
           <h1>Your Progress Journey</h1>
           <p>Track your fitness transformation and celebrate your achievements</p>
+            <div className="badges-list">
+        {unlocked.length > 0 ? (
+          unlocked.map((badge) => (
+            <div key={badge.id} className="badge-card">
+              🏅 {badge.name}
+            </div>
+          ))
+        ) : (
+          <p>Aucun badge débloqué pour l'instant.</p>
+        )}
+      </div>
         </div>
         <div className="period-selector">
           <button 

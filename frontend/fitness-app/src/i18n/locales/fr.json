@@ -1,0 +1,85 @@
+{
+  "common": {
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "dashboard": "Tableau de bord",
+    "workouts": "Entraînements",
+    "exercises": "Exercices",
+    "profile": "Profil",
+    "home": "Accueil",
+    "service": "Services",
+    "pricing": "Tarifs",
+    "ourWork": "Nos Réalisations",
+    "loading": "Chargement...",
+    "welcome": "Bienvenue",
+    "getStarted": "Commencer",
+    "learnMore": "En savoir plus",
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "finish": "Terminer"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "service": "Services",
+    "pricing": "Tarifs", 
+    "ourWork": "Nos Réalisations",
+    "dashboard": "Tableau de bord"
+  },
+  "homepage": {
+    "title": "Transformez Votre Corps, Transformez Votre Vie",
+    "subtitle": "Votre compagnon fitness ultime pour un mode de vie plus sain",
+    "getStarted": "Commencer Votre Parcours",
+    "learnMore": "En Savoir Plus"
+  },
+  "auth": {
+    "loginTitle": "Bon Retour",
+    "registerTitle": "Rejoignez JuniorFitness",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "loginButton": "Se Connecter",
+    "registerButton": "Créer un Compte",
+    "forgotPassword": "Mot de passe oublié ?",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "noAccount": "Vous n'avez pas de compte ?"
+  },
+  "dashboard": {
+    "welcome": "Bon retour",
+    "todayWorkout": "Entraînement du jour",
+    "weeklyProgress": "Progrès hebdomadaire",
+    "quickActions": "Actions rapides",
+    "recentActivity": "Activité récente"
+  },
+  "workouts": {
+    "title": "Entraînements",
+    "create": "Créer un entraînement",
+    "myWorkouts": "Mes entraînements",
+    "recommended": "Recommandés",
+    "duration": "Durée",
+    "difficulty": "Difficulté",
+    "exercises": "Exercices"
+  },
+  "exercises": {
+    "title": "Exercices",
+    "search": "Rechercher des exercices...",
+    "category": "Catégorie",
+    "muscleGroup": "Groupe musculaire",
+    "equipment": "Équipement"
+  },
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Informations personnelles",
+    "fitnessGoals": "Objectifs fitness",
+    "preferences": "Préférences",
+    "statistics": "Statistiques"
+  }
+}
